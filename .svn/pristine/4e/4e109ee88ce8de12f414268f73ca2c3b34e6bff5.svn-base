@@ -1,0 +1,78 @@
+package com.treemanage.treecomponent.controller;
+
+
+import com.container.treecontainer.bo.TreeNode;
+import com.treemanage.treecomponent.vo.VOBeanTreeStuctureInfo;
+
+import java.util.List;
+
+/**
+ * @author Mist
+ * @version 1.0
+ * @created 29-12-2019 9:44:43
+ */
+public class BeanTreeStructurePageController {
+
+	/**
+	 * 
+	 * @param parentNodeId
+	 * @param beanTreeStructureInfo
+	 */
+	public TreeNode addBeanTreeStuctureInfo(Long parentNodeId, VOBeanTreeStuctureInfo beanTreeStructureInfo){
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param treeNode
+	 */
+	public TreeNode addSystem(TreeNode treeNode){
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param nodeId
+	 */
+	public TreeNode deleteSystem(Long nodeId){
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param nodeId
+	 * @param url
+	 */
+	public boolean exportBeanTreeStructureInfo(Long nodeId, String url){
+		return false;
+	}
+
+	/**
+	 * 
+	 * @param nodeId
+	 */
+	public VOBeanTreeStuctureInfo getBeanTreeStuctureInfo(Long nodeId){
+		return null;
+	}
+
+	public List<TreeNode> getTreeView(){
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param beanTreeStructureInfo
+	 */
+	public TreeNode updateBeanTreeStuctureInfo(VOBeanTreeStuctureInfo beanTreeStructureInfo){
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param treeNode
+	 */
+	public TreeNode updateSystem(TreeNode treeNode){
+		return null;
+	}
+
+}

@@ -1,0 +1,20 @@
+package com.hdstcloud.security.common.exception.base;
+
+import com.hdstcloud.security.common.constant.RestCodeConstants;
+import com.hdstcloud.security.common.constant.ResultCodeEnum;
+import com.hdstcloud.security.common.exception.BaseException;
+
+public class BusinessException extends BaseException {
+
+    public BusinessException(String message) {
+        super(message, RestCodeConstants.EX_BUSINESS_BASE_CODE);
+    }
+
+    public BusinessException(int status,String message) {
+        super(message, status);
+    }
+
+    public BusinessException(ResultCodeEnum codeEnum) {
+        super(codeEnum.getMessage(), codeEnum.getHttpStatus().value());
+    }
+}

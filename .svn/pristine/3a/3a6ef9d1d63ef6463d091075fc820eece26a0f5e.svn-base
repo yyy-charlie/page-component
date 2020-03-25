@@ -1,0 +1,26 @@
+package com.treemanage.treecomponent.bo;
+
+
+import com.bocontainer.annotaion.ForeignKey;
+
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+/**
+ * @author Mist
+ * @version 1.0
+ * @created 29-12-2019 9:43:39
+ */
+public class NodeStructureInfo {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "JDBC")
+	private Long id;							//主键
+	private String beanClassName;				//BO对象路径
+	private boolean ifPersistence;				//是否允许持久化
+	private Long beanStructureId;				//BO对象结构信息ID
+	@ForeignKey
+	private Long beanTreeStuctureInfoId;		//BO树结构信息ID
+
+}

@@ -1,0 +1,77 @@
+package com.treemanage.treecomponent.biz.impl;
+
+import com.container.treecontainer.bo.TreeNode;
+import com.container.treecontainer.vo.TreeVO;
+import com.treemanage.treecomponent.biz.intf.BeanStructureBiz;
+import com.treemanage.treecomponent.bo.BeanStructureInfo;
+import com.treemanage.treecomponent.tree.BeanStructureTreeConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.InputStream;
+import java.util.List;
+
+/**
+ * @Author: Mist
+ * @Version: 1.0
+ * @Date: 2019/12/29 9:24
+ */
+@Service
+public class BeanStructureBizImpl implements BeanStructureBiz {
+
+    @Autowired
+    private BeanStructureTreeConfig beanStructureTreeConfig;
+
+
+
+    @Override
+    public TreeNode addNode(TreeNode treeNode) {
+        return beanStructureTreeConfig.getTreeContainer().addTreeNode(treeNode);
+    }
+
+    @Override
+    public boolean deleteNode(Long nodeId) {
+        return beanStructureTreeConfig.getTreeContainer().delete(nodeId);
+    }
+
+    @Override
+    public TreeNode updateNode(TreeNode treeNode) {
+        return beanStructureTreeConfig.getTreeContainer().updateTreeNode(treeNode);
+    }
+
+    /**
+     *
+     * @param parentNodeId
+     * @param beanStructureInfo
+     */
+    private TreeNode addBeanStructureInfo(Long parentNodeId, BeanStructureInfo beanStructureInfo){
+        return null;
+    }
+
+    @Override
+    public boolean exportBeanStructureInfo(Long nodeId, String url) {
+        return false;
+    }
+
+    @Override
+    public BeanStructureInfo getBeanStructureInfo(Long nodeId) {
+        return null;
+    }
+
+    @Override
+    public List<TreeVO> getTreeView() {
+        return null;
+    }
+
+    @Override
+    public BeanStructureInfo inportBeanStructureInfo(Long parentNodeId, InputStream is) {
+        return null;
+    }
+
+    @Override
+    public BeanStructureInfo updateBeanStructureInfo(BeanStructureInfo beanStructureInfo) {
+        return null;
+    }
+
+
+}

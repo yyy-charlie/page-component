@@ -1,0 +1,29 @@
+package com.treemanage.treecomponent.vo;
+
+
+import com.bocontainer.annotaion.ForeignKey;
+import lombok.Data;
+
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+/**
+ * @author Mist
+ * @version 1.0
+ * @created 29-12-2019 9:07:58
+ */
+@Data
+public class VOAttrStructureInfo {
+	private Long id;				//主键
+	private String name;			//属性名
+	private String description;		//属性描述
+	private String javaType;		//java对象类型
+	private Boolean ifId;			//是否为主键
+	private String generatedValue;	//主键生成规则
+	private Boolean ifForeignKey;	//是否为外键
+	private String column;			//持久化字段名
+	private Boolean ifIgnoreParam;	//是否忽略该属性不持久化
+	private Long beanStructureInfoId;	//外键，对象结构信息ID
+
+}

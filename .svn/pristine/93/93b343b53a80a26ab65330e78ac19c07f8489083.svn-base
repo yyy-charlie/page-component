@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>vo管理</title>
+    <link href="/css/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/bootstrap-treeview/bootstrap-treeview.css" rel="stylesheet">
+    <link href="/css/bootstrap-ztree/bootstrapStyle.css" rel="stylesheet">
+    <link href="/css/bootstrap-table/bootstrap-table.css" rel="stylesheet">
+    <!----------导入插件---------->
+    <link rel="stylesheet" href="/css/bootstrap-fileinput-master/fileinput.min.css">
+    <!--验证插件-->
+    <link rel="stylesheet" href="/css/bootstrap-validator/bootstrapValidator.min.css">
+
+
+    <script src="/js/common/systemCommonQuote.js"></script>
+    <script src="/js/common/commFunction.js"></script>
+    <script src="/js/common/pluginLibrary.js"></script>
+    <!----------导入插件---------->
+    <script src="/js/bootstrap-fileinput-master/fileinput.min.js"></script>
+    <script src="/js/bootstrap-fileinput-master/zh.js"></script>
+
+    <!--验证插件-->
+    <script src="/js/bootstrap-validator/bootstrapValidator.min.js"></script>
+
+
+    <style>
+        .form-inline input {
+            margin-right: 35px;
+            margin-bottom: 5px;
+        }
+
+        .form-inline select {
+            margin-right: 35px;
+            margin-bottom: 5px;
+        }
+
+        .form-inline label {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+
+    <div class="row" id="head-top-model">
+        <div class="col-xs-12 new-head" id="headMenu">
+            <nav class="navbar navbar-default" role="navigation" id="navbar">
+                <div class="container-fluid">
+                    <div>
+                        <!--向左对齐-->
+                        <ul class="nav navbar-nav navbar-left">
+                            <li class="navbar-text navbar-left" id="cloud-name"></li>
+                        </ul>
+                        <!--向右对齐-->
+                        <ul class="nav navbar-nav navbar-right" id="sysMenu" style="margin-right: 10px;margin-top:8px">
+                            <li class="dropdown">
+                                <select name="systemChoose" onchange="window.location=this.value;" id="selectBoManage"
+                                        class="form-control">
+                                    <option value="voManage">VO管理页面</option>
+                                    <option value="boObjManage">BO对象管理页面</option>
+                                    <option value="boTreeManage">BO树结构管理</option>
+                                </select>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row panelWrapper">
+        <div class="col-lg-12 col-md-12">
+            <div class="panel panel-primary" id="PageTreeConfigPanel" style="overflow: scroll;height: 843px;">
+                <div class="panel-heading">页面树配置</div>
+                <div class="panel-body">
+                    <div style="width: 1200px;margin: auto;">
+                        <form class="form-inline" data-bv-message="This value is not valid"
+                              data-bv-feedbackicons-valid="glyphicon glyphicon-ok"
+                              data-bv-feedbackicons-invalid="glyphicon glyphicon-remove"
+                              data-bv-feedbackicons-validating="glyphicon glyphicon-refresh">
+                            <div class="form-group">
+                                <label class="label-control" for="ztreeId">ztreeId：</label>
+                                <input type="text" class='form-control' id="ztreeId" required>
+
+                                <label class="label-control" for="treeUrl">获取数据的url：</label>
+                                <input type="text" class='form-control' id="treeUrl" required>
+                            </div>
+                        </form>
+
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label class="label-control" for="showAddBtn">悬浮显示新增按钮：</label>
+                                <select id="showAddBtn" class="form-control">
+                                    <option value="1">显示</option>
+                                    <option value="0">隐藏</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="label-control" for="addBtnTrigger">新增按钮触发：</label>
+                                <select id="addBtnTrigger" class="form-control">
+                                    <option value="1">打开新增模态框</option>
+                                    <option value="0">其他</option>
+                                </select>
+
+                                <div class="form-group">
+                                    <label class="label-control" for="addNodeUrl">新增节点请求地址：</label>
+                                    <input type="text" class='form-control' id="addNodeUrl">
+                                </div>
+                            </div>
+                        </form>
+
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label class="label-control" for="inEditingState">处于编辑状态：</label>
+                                <select id="inEditingState" class="form-control">
+                                    <option value="1">是</option>
+                                    <option value="0">否</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="label-control" for="showRenameBtn">悬浮显示重命名按钮：</label>
+                                <select id="showRenameBtn" class="form-control">
+                                    <option value="1">使用ztree的原生按钮</option>
+                                    <option value="2">使用自定义按钮</option>
+                                    <option value="0">不显示</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="display: none;">
+                                <label class="label-control" for="editBtnTrigger">自定义编辑按钮触发：</label>
+                                <select id="editBtnTrigger" class="form-control">
+                                    <option value="1">打开编辑模态框</option>
+                                    <option value="0">其他</option>
+                                </select>
+
+                                <div class="form-group">
+                                    <label class="label-control" for="editNodeUrl">编辑节点请求地址：</label>
+                                    <input type="text" class='form-control' id="editNodeUrl">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="label-control" for="renameTitle">重命名标题：</label>
+                                <input type="text" class='form-control' id="renameTitle" value="编辑节点">
+                                <label class="label-control" for="renameBtnShowLimit">限制：</label>
+                                <select id="renameBtnShowLimit" class="form-control">
+                                    <option value="0">父节点不能重命名</option>
+                                    <option value="1">所有节点都能重命名</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="label-control" for="showRemoveBtn">悬浮显示删除按钮：</label>
+                                <select id="showRemoveBtn" class="form-control">
+                                    <option value="1">显示</option>
+                                    <option value="0">不显示</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="label-control" for="removeTitle">删除标题：</label>
+                                <input type="text" class='form-control' id="removeTitle" value="删除节点">
+                                <label class="label-control" for="deleteBtnShowLimit">限制：</label>
+                                <select id="deleteBtnShowLimit" class="form-control">
+                                    <option value="0">父节点不能删除</option>
+                                    <option value="1">所有节点都能删除</option>
+                                </select>
+                            </div>
+                        </form>
+
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label class="label-control" for="showRadioOrCheckbox">显示单选/复选框：</label>
+                                <select id="showRadioOrCheckbox" class="form-control">
+                                    <option value="1">是</option>
+                                    <option value="0">否</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="label-control" for="chkStyle">勾选框类型：</label>
+                                <select id="chkStyle" class="form-control">
+                                    <option value="0">单选</option>
+                                    <option value="1">复选</option>
+                                </select>
+
+                                <label class="label-control" for="influenceParentNode">勾选后：</label>
+                                <select id="influenceParentNode" class="form-control">
+                                    <option value="0">取消父子关联</option>
+                                    <option value="1">影响父级节点</option>
+                                    <option value="2">影响子级节点</option>
+                                    <option value="3">影响父子级节点</option>
+                                </select>
+
+                                <label class="label-control" for="influenceChildrenNode">取消勾选后：</label>
+                                <select id="influenceChildrenNode" class="form-control">
+                                    <option value="0">没有父子关联</option>
+                                    <option value="1">影响父级节点</option>
+                                    <option value="2">影响子级节点</option>
+                                    <option value="3">影响父子级节点</option>
+                                </select>
+                            </div>
+                        </form>
+
+
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label class="label-control" for="openNode">点击展开子节点：</label>
+                                <select id="openNode" class="form-control">
+                                    <option value="1">双击</option>
+                                    <option value="0">单击</option>
+                                </select>
+                            </div>
+                        </form>
+
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label class="label-control" for="showLine">显示节点之间的连线：</label>
+                                <select id="showLine" class="form-control">
+                                    <option value="1">是</option>
+                                    <option value="0">否</option>
+                                </select>
+
+                                <label class="label-control" for="txtSelectedEnable">可以选择name文本：</label>
+                                <select id="txtSelectedEnable" class="form-control">
+                                    <option value="1">是</option>
+                                    <option value="0">否</option>
+                                </select>
+
+                                <label class="label-control" for="selectedMulti">允许同时选中多个节点：</label>
+                                <select id="selectedMulti" class="form-control">
+                                    <option value="1">是</option>
+                                    <option value="0">否</option>
+                                </select>
+                            </div>
+                        </form>
+
+
+                        <div class="form-group form-inline">
+                            <button type="button" style="float:right;" class="btn btn-primary"
+                                    onclick="exportTreeConfig()">
+                                导出配置
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--模态框-->
+<div class="modal fade" id="modal_department" tabindex="-1" role="dialog">
+</div>
+
+
+</body>
+
+<script src="/js/treeComponentCommon.js"></script>
+<script src="/js/voManage/voManage.js"></script>
+<script src="/js/voManage/voManageBiz.js"></script>
+
+</html>

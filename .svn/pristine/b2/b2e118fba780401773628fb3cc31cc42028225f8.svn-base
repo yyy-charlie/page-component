@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.treemanage.treecomponent.mapper.POBeanStructureInfoMapper">
+    <resultMap id="BaseResultMap" type="com.treemanage.treecomponent.bo.BeanStructureInfo">
+        <id column="BeanStructureInfoId" property="id" jdbcType="BIGINT"/>
+        <result column="bean_name" property="beanName" jdbcType="VARCHAR"/>
+        <result column="bean_class_name" property="beanClassName" jdbcType="VARCHAR"/>
+        <collection property="attributes" ofType="com.treemanage.treecomponent.bo.AttrStructureInfo">
+              <id column="AttrStructureInfoId" property="id" jdbcType="BIGINT"/>
+              <result column="name" property="name" jdbcType="VARCHAR"/>
+              <result column="description" property="description" jdbcType="VARCHAR"/>
+              <result column="if_list" property="ifList" jdbcType="BOOLEAN"/>
+              <result column="java_type" property="javaType" jdbcType="INTEGER"/>
+              <result column="if_id" property="ifId" jdbcType="BOOLEAN"/>
+              <result column="generated_value" property="generatedValue" jdbcType="INTEGER"/>
+              <result column="if_foreign_key" property="ifForeignKey" jdbcType="BOOLEAN"/>
+              <result column="column" property="column" jdbcType="VARCHAR"/>
+              <result column="if_ignore_param" property="ifIgnoreParam" jdbcType="BOOLEAN"/>
+              <result column="bean_type_id" property="beanTypeId" jdbcType="INTEGER"/>
+              <result column="bean_structure_info_id" property="beanStructureInfoId" jdbcType="BIGINT"/>
+        </collection>
+    </resultMap>
+</mapper>

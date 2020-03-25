@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>BO树结构管理</title>
+    <link href="/css/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/bootstrap-treeview/bootstrap-treeview.css" rel="stylesheet">
+    <link href="/css/bootstrap-ztree/bootstrapStyle.css" rel="stylesheet">
+    <link href="/css/bootstrap-table/bootstrap-table.css" rel="stylesheet">
+
+    <script src="/js/common/systemCommonQuote.js"></script>
+    <script src="/js/common/commFunction.js"></script>
+    <script src="/js/common/pluginLibrary.js"></script>
+
+</head>
+<body>
+<div class="container-fluid">
+
+    <div class="row" id="head-top-model">
+        <div class="col-xs-12 new-head" id="headMenu">
+            <nav class="navbar navbar-default" role="navigation" id="navbar">
+                <div class="container-fluid">
+                    <div>
+                        <!--向左对齐-->
+                        <ul class="nav navbar-nav navbar-left">
+                            <li class="navbar-text navbar-left" id="cloud-name"></li>
+                        </ul>
+                        <!--向右对齐-->
+                        <ul class="nav navbar-nav navbar-right" id="sysMenu" style="margin-right: 10px;margin-top:8px">
+                            <li class="dropdown">
+                                <select name="systemChoose" onchange="window.location=this.value;" id="selectBoManage"
+                                        class="form-control">
+                                    <option value="boTreeManage">BO树结构管理</option>
+                                    <option value="boObjManage">BO对象管理页面</option>
+                                </select>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row panelWrapper">
+        <div class="treePanelWrapper col-lg-2 col-md-2">
+            <div class="panel panel-primary" id="boTreePanel" style="height: 843px;">
+                <div class="panel-heading">树列表</div>
+                <div class="panel-body">
+                    <button type="button" class="btn btn-primary" onclick="addSystem()">
+                        新增系统
+                    </button>
+
+                    <div class="panel panel-default" style="margin:10px;padding: 0;">
+
+                        <div id="boTree" class="ztree" style="height: 640px;overflow: scroll;">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="treePanelWrapper col-lg-2 col-md-2">
+            <div class="panel panel-primary" id="treeConfigPanel" style="height: 843px;">
+                <div class="panel-heading">树配置</div>
+                <div class="panel-body">
+                    <!--                    <button type="button" class="btn btn-primary" onclick="addSystem()">-->
+                    <!--                        新增系统-->
+                    <!--                    </button>-->
+
+                    <div class="panel panel-default" style="margin:10px;padding: 0;">
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="infoPanelWrapper col-lg-8 col-md-8" style="padding-left: 0">
+            <div class="panel panel-primary" id="formManage" style="height: 843px;">
+                <div class="panel-heading">树结构</div>
+                <div class="panel-body">
+
+
+                    <label for="treeStructurePreviewTree">树结构预览</label>
+                    <div id="treeStructurePreviewTree" class="ztree" style="height: 640px;overflow: scroll;">
+                    </div>
+
+                    <label for="objectStructureTree">对象结构</label>
+                    <div id="objectStructureTree" class="ztree" style="height: 640px;overflow: scroll;">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--模态框-->
+<div class="modal fade" id="modal_department" tabindex="-1" role="dialog">
+</div>
+
+<!--预览Excel的模态框-->
+<div class="modal fade" id="modal_preview_excel" tabindex="-1" role="dialog">
+</div>
+
+
+<!--导入模态框-->
+<div class="modal fade" id="importExcelModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">导入</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">请选择java文件：</label>
+                    <input type="file" name="uploadFile" id="uploadFile" multiple class="file-loading"
+                           data-show-upload="true"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script src="/js/boTreeManage.js"></script>
+
+</html>

@@ -1,0 +1,71 @@
+package com.treemanage.treecomponent.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * @ClassName JumpToHtmlController
+ * @Description TODO
+ * @Author ycn
+ * @Date 2019-09-29
+ **/
+@Controller
+public class JumpToHtmlController {
+
+    @RequestMapping("/")
+    public String getIndex() {
+        return "/boObjManage";
+    }
+
+    /**
+     * 跳转到Bo对象管理页面
+     *
+     * @return
+     */
+    @RequestMapping("/boObjManage")
+    public String getBoObjManage() {
+        return "/boObjManage";
+    }
+
+    /**
+     * 跳转到Bo树管理页面
+     *
+     * @return
+     */
+    @RequestMapping("/boTreeManage")
+    public String getBoTreeManage() {
+        return "/boTreeManage";
+    }
+
+    /**
+     * 跳转到配置树组件管理页面
+     *
+     * @return
+     */
+    @RequestMapping("/treeManage")
+    public String getTreeManage() {
+        return "/treeManage";
+    }
+
+    /**
+     * 跳转到配置表单页面
+     *
+     * @return
+     */
+    @RequestMapping("/formManage")
+    public String getFormManage() {
+        return "/formManage";
+    }
+
+    /**
+     * 跳转到树配置测试页面
+     *
+     * @return
+     */
+    @RequestMapping("/treeConfigTest")
+    public String getTreeConfigTest() {
+        return "/treeConfigTest";
+    }
+
+
+}

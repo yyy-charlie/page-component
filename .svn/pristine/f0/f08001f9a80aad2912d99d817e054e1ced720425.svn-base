@@ -1,0 +1,121 @@
+package com.treemanage.treecomponent.controller;
+
+import com.container.treecontainer.bo.TreeNode;
+import com.treemanage.treecomponent.vo.VOBeanStructureInfo;
+import org.springframework.stereotype.Controller;
+
+import java.io.InputStream;
+import java.util.List;
+
+
+/**
+ * @author Mist
+ * @version 1.0
+ * @created 27-12-2019 17:55:40
+ */
+@Controller
+public class BeanStructurePageController {
+
+	/**
+	 * 
+	 * @param treeNode
+	 */
+	public TreeNode addModule(TreeNode treeNode){
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param treeNode
+	 */
+	public TreeNode addSystem(TreeNode treeNode){
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param nodeId
+	 */
+	public boolean deleteModule(Long nodeId){
+		return false;
+	}
+
+	/**
+	 * 
+	 * @param nodeId
+	 */
+	public boolean deleteSystem(Long nodeId){
+		return false;
+	}
+
+	/**
+	 * 
+	 * @param nodeId
+	 * @param url
+	 */
+	public boolean exportBeanStructureInfo(Long nodeId, String url){
+		return false;
+	}
+
+	/**
+	 * 
+	 * @param nodeId
+	 */
+	public VOBeanStructureInfo getBeanStructureInfo(Long nodeId){
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param parentNodeId
+	 */
+	public List<TreeNode> getBeanStructureListBySys(Long parentNodeId){
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param parentNodeId
+	 */
+	public List<TreeNode> getDescendantsView(Long parentNodeId){
+		return null;
+	}
+
+	public List<TreeNode> getTreeView(){
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param parentNodeId
+	 * @param is
+	 */
+	public TreeNode inportBeanStructureInfo(Long parentNodeId, InputStream is){
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param beanStructureInfo
+	 */
+	public VOBeanStructureInfo updateBeanStructureInfo(VOBeanStructureInfo beanStructureInfo){
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param treeNode
+	 */
+	public TreeNode updateModule(TreeNode treeNode){
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param treeNode
+	 */
+	public TreeNode updateSystem(TreeNode treeNode){
+		return null;
+	}
+
+}

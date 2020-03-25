@@ -1,0 +1,27 @@
+package com.treemanage.treecomponent.parse;
+
+
+/**
+ * @author Mist
+ * @version 1.0
+ * @created 29-12-2019 9:40:39
+ */
+public class ParseViewAndBeanModule {
+
+	/**
+	 * 
+	 * @param bean
+	 */
+	public Object parseBeanToView(Object bean){
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param view
+	 */
+	public Object parseViewToBean(Object view){
+		return null;
+	}
+
+}

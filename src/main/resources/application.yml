@@ -1,0 +1,24 @@
+server:
+  port: 8094
+spring:
+  application:
+    name: service-pagecomponent
+  thymeleaf:
+    prefix: classpath:/templates/
+
+#调用feign请求超时
+ribbon:
+  ReadTimeout: 60000
+  ConnectTimeout: 60000
+
+mybatis:
+  typeAliasesPackage: com.hdst.materialcode.pojo
+  mapper-locations: classpath*:/mapping/**Mapper.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    cache-enabled: false
+
+
+feign:
+  hystrix:
+    enabled: true

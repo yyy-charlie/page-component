@@ -1,0 +1,27 @@
+package com.treemanage.treecomponent.export.intf;
+
+import com.treemanage.treecomponent.bo.BeanStructureInfo;
+
+import java.io.InputStream;
+
+/**
+ * @author Mist
+ * @version 1.0
+ * @created 29-12-2019 9:38:46
+ */
+public interface InportExportBean {
+
+	/**
+	 * 
+	 * @param beanStructureInfo
+	 * @param url
+	 */
+	public boolean exportBeanStructureInfo(BeanStructureInfo beanStructureInfo, String url);
+
+	/**
+	 * 
+	 * @param is
+	 */
+	public BeanStructureInfo inportBeanStructureInfo(InputStream is);
+
+}

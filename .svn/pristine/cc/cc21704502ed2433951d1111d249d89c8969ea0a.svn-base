@@ -1,0 +1,153 @@
+package com.treemanage.treecomponent.export.impl;
+
+import com.container.treecontainer.util.ObjectUtils;
+import com.treemanage.treecomponent.bo.AttrStructureInfo;
+import com.treemanage.treecomponent.bo.BeanStructureInfo;
+import com.treemanage.treecomponent.enump.JavaType;
+import com.treemanage.treecomponent.export.intf.InportExportBean;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @Author: Mist
+ * @Version: 1.0
+ * @Date: 2020/1/4 11:45
+ */
+@Service
+public class InportExportBeanImpl implements InportExportBean {
+
+    @Override
+    public BeanStructureInfo inportBeanStructureInfo(MultipartFile file) {
+
+        BeanStructureInfo beanStructureInfo = analysisBeanStructureInfo(file);
+
+        return beanStructureInfo;
+    }
+
+    @Override
+    public InputStream exportBeanStructureInfo(BeanStructureInfo beanStructureInfo) {
+        return null;
+    }
+
+
+
+    /*-----------------------------------------------------------------------------------------------------------------*/
+
+
+    private BeanStructureInfo analysisBeanStructureInfo(MultipartFile file) {
+        BeanStructureInfo beanStructureInfo = new BeanStructureInfo();
+
+        setBeanName(beanStructureInfo,file);
+
+        InputStream is = null;
+        BufferedReader bufferedReader = null;
+        try {
+            is = file.getInputStream();
+
+            bufferedReader = new BufferedReader(new InputStreamReader(is));
+
+            String str = null;
+            List<AttrStructureInfo> attrStructureInfos = new ArrayList<>();
+            while((str = bufferedReader.readLine()) != null)
+            {
+                AttrStructureInfo tempAttr = getAttrStructureInfo(str);
+
+                if(!ObjectUtils.isNull(tempAttr))  attrStructureInfos.add(tempAttr);
+            }
+
+            if(ObjectUtils.judgeList(attrStructureInfos)) beanStructureInfo.setAttributes(attrStructureInfos);
+
+            return beanStructureInfo;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                is.close();
+                bufferedReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    private AttrStructureInfo getAttrStructureInfo(String str) {
+
+        AttrStructureInfo attrStructureInfo = new AttrStructureInfo();
+
+        str = str.trim();
+
+        if(str.trim().matches("private.*")){
+
+            String[] strings = str.split("[ ]");
+
+            setJavaType(strings[1],attrStructureInfo);
+
+            setIfList(strings[1],attrStructureInfo);
+
+            attrStructureInfo.setName(strings[2].split("[;]")[0]);
+
+            setDescription(strings[2],attrStructureInfo);
+
+            return attrStructureInfo;
+        }
+        return null;
+    }
+
+
+
+    private void setJavaType(String string, AttrStructureInfo attrStructureInfo) {
+
+        String javaTypeValue = getListJavaType(string);
+
+        JavaType javaType = JavaType.getEnum(javaTypeValue);
+
+        if(ObjectUtils.isNull(javaType)){
+            attrStructureInfo.setBeanTypeName(javaTypeValue);
+            attrStructureInfo.setJavaType(JavaType.OBJECT.getCode());
+        }else {
+            attrStructureInfo.setJavaType(javaType.getCode());
+        }
+
+    }
+
+    private void setIfList(String string, AttrStructureInfo attrStructureInfo) {
+        attrStructureInfo.setIfList(string.trim().matches("List<.*>"));
+    }
+
+    private String getListJavaType(String string) {
+
+        if(string.trim().matches("List<.*>")){
+            string = string.substring(5);
+            return string.substring(0,string.length() -1);
+
+        }
+        return string;
+    }
+
+    private void setAttrName(String string, AttrStructureInfo attrStructureInfo) {
+        attrStructureInfo.setName(string);
+    }
+
+    private void setDescription(String string, AttrStructureInfo attrStructureInfo) {
+        String[] strings = string.split("//");
+        if(strings.length > 1) attrStructureInfo.setDescription(strings[1]);
+    }
+
+
+    private void setBeanName(BeanStructureInfo beanStructureInfo, MultipartFile file) {
+        String className = file.getName().split("[.]")[0];
+        beanStructureInfo.setBeanName(className);
+    }
+
+
+
+}

@@ -1,0 +1,283 @@
+var boTree = $('#boTree');
+
+var addSystemModal = $('#addSystemModal');
+
+
+(function initSystem() {
+
+    loadTree();
+
+    initTable();
+})();
+
+function loadTree() {
+    boTree.setting = {
+        view: {
+            selectedMulti: false,
+            addHoverDom: addHoverDom,
+            removeHoverDom: removeHoverDom
+        },
+        data: {
+            simpleData: {
+                enable: true
+            }
+        },
+
+        edit: {
+            showRemoveBtn: false,
+            showRenameBtn: false,
+            enable: true,
+            drag: {
+                isCopy: false,
+                isMove: false
+            }
+        },
+        callback: {
+            onClick: boTreeOnClick
+        }
+    };
+
+    requestAjax('post', 'http://rap2api.taobao.org/app/mock/241077/getTreeView2', 'false', null, 'json', function (res) {
+        if (res.code === 200) {
+            var _data = res.data;
+            let nodes = ztreeFormat(_data);
+            $.fn.zTree.init(boTree, boTree.setting, nodes);
+            boTree.oTree = $.fn.zTree.getZTreeObj("boTree");
+        }
+    });
+
+    function addHoverDom(treeId, treeNode) {
+        //只有根节点有新增按钮
+        if (treeNode.level == 0) {
+            addModelBtn(treeNode)
+        }
+        //没有子节点的节点有删除按钮
+        if (!treeNode.children) {
+            deleteSysOrModuleBtn(treeNode);
+        }
+        //节点的修改名称按钮
+        editNodeName(treeNode);
+    }
+
+    function addModelBtn(treeNode) {
+        var sObj = $("#" + treeNode.tId + "_span");
+
+        if (treeNode.editNameFlag || $("#addBtn_" + treeNode.tId).length > 0) return;
+
+        var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+            + "' title='新增模块' onfocus='this.blur();'></span>";
+
+        sObj.after(addStr);
+
+        var btn = $("#addBtn_" + treeNode.tId);
+
+        if (btn) btn.bind("click", function () {
+
+            //modal
+            var tModalConfigure = {
+                id: 'addModule',
+                frameObj: $('#modal_department'),
+                title: '新增模块',
+                callbacks: {
+                    onCommit: addModuleCommit
+                }
+            };
+            var tModal = new comModal();
+            tModal.init(tModalConfigure);
+
+            addModuleModal.treeNode = treeNode;
+
+            var formOption = {
+                formId: 'moduleForm',
+                initContent: [
+                    {
+                        itemId: "sysModule",
+                        label: {
+                            text: "模块名 "
+                        },
+                    }]
+            };
+            var tForm = new comForm();
+            tForm.init(formOption);
+
+            tModal.appendEle(tForm);
+            return false;
+        });
+    }
+
+    function deleteSysOrModuleBtn(treeNode) {
+        var sObj = $("#" + treeNode.tId + "_span");
+        if (treeNode.editNameFlag || $("#addBtn_" + treeNode.tId + "2").length > 0) return;
+
+        var addStr = "<span class='button remove' id='addBtn_" + treeNode.tId + "2"
+            + "' title='删除' onfocus='this.blur();'></span>";
+
+        sObj.after(addStr);
+
+        var btn = $("#addBtn_" + treeNode.tId + "2");
+
+        if (btn) btn.bind("click", function () {
+            if (confirm("确认删除吗？")) {
+                requestAjax('post', 'http://rap2api.taobao.org/app/mock/241077/getBeanStructureInfo2?nodeId=' + treeNode.id, 'false', null, 'json', function (res) {
+                    alert(res.description);
+                    if (res.code === 200) {
+                        //删除节点
+                        var treeObj = $.fn.zTree.getZTreeObj("boObjTree");
+                        //根据节点数据的属性搜索
+                        var nodes = treeObj.getNodesByParam("id", treeNode.id, null);
+                        for (let i = 0, l = nodes.length; i < l; i++) {
+                            treeObj.removeNode(nodes[i]);
+                        }
+                    }
+                });
+            }
+            return false;
+        });
+    }
+
+    function editNodeName(treeNode) {
+        var sObj = $("#" + treeNode.tId + "_span");
+
+        if (treeNode.editNameFlag || $("#addBtn_" + treeNode.tId + 3).length > 0) return;
+
+        var addStr = "<span class='button edit' id='addBtn_" + treeNode.tId + 3
+            + "' title='编辑' onfocus='this.blur();'></span>";
+
+        sObj.after(addStr);
+
+        var btn = $("#addBtn_" + treeNode.tId + 3);
+
+        if (btn) btn.bind("click", function () {
+
+            //modal
+            var tModalConfigure = {
+                id: 'addModule',
+                frameObj: $('#modal_department'),
+                title: '编辑节点',
+                callbacks: {
+                    onCommit: editNodeNameCommit
+                }
+            };
+            var tModal = new comModal();
+            tModal.init(tModalConfigure);
+
+            addModuleModal.treeNode = treeNode;
+
+            var formOption = {
+                formId: 'moduleForm',
+                initContent: [
+                    {
+                        itemId: "editNodeName",
+                        label: {
+                            text: "更新名称"
+                        },
+                        value: treeNode.name
+                    }]
+            };
+            var tForm = new comForm();
+            tForm.init(formOption);
+
+            tModal.appendEle(tForm);
+            return false;
+        });
+
+        function editNodeNameCommit(e, oModal) {
+            let oVal = oModal.getValues();
+
+            var data = {
+                id: treeNode.objectId,
+                name: oVal.editNodeName
+            };
+            requestAjax('post', 'http://rap2api.taobao.org/app/mock/241077/updateSysOrModuleName', 'false', JSON.stringify(data), 'json', function (res) {
+                alert(res.description);
+                if (res.code === 200) {
+                    //隐藏模态框
+                    oModal.hide();
+
+                    //更新节点
+                    var treeObj = $.fn.zTree.getZTreeObj("boObjTree");
+                    //根据节点数据的属性搜索
+                    var nodes = treeObj.getNodesByParam("id", treeNode.id, null);
+                    var node = nodes[0];
+                    node.name = oVal.editNodeName;
+                    treeObj.updateNode(node);
+                }
+            });
+        }
+    }
+
+    function removeHoverDom(treeId, treeNode) {
+        $("#addBtn_" + treeNode.tId).unbind().remove();
+        $("#addBtn_" + treeNode.tId + "2").unbind().remove();
+        $("#addBtn_" + treeNode.tId + "3").unbind().remove();
+    }
+
+    var ztreeData = [];
+
+    function ztreeFormat(data) {
+        $.each(data, function (index, ele) {
+            var node = {
+                id: ele.id,
+                pId: ele.parentId,
+                objectId: ele.objectId,
+                name: ele.name,
+                open: true
+            };
+            ztreeData.push(node);
+            var children = ele.children;
+            if (children != null && children.length > 0) {
+                ztreeFormat(children)
+            }
+        });
+        return ztreeData;
+    }
+
+    function boTreeOnClick(event, treeId, treeNode) {
+        requestAjax('post', 'http://rap2api.taobao.org/app/mock/241077/getBeanStructureInfo22?nodeId=' + treeNode.id, false, null, 'json', function (res) {
+                var result = res.data;
+                $("#className").text(result.beanName);
+                objectInfoTable.hdstTable("removeAll");
+                objectInfoTable.appendData(result.attributes);
+            }
+        );
+    }
+
+}
+
+function initTable() {
+
+}
+
+/**
+ * 新增系统
+ */
+function addSystem() {
+    addSystemModal.treeData = null;
+
+    //modal
+    var tModalConfigure = {
+        id: 'addSystem',
+        frameObj: $('#modal_department'),
+        title: '新增系统',
+        callbacks: {
+            onCommit: addSystemCommit
+        }
+    };
+    var tModal = new comModal();
+    tModal.init(tModalConfigure);
+
+    var formOption = {
+        formId: 'moduleForm',
+        initContent: [
+            {
+                itemId: "systemName",
+                label: {
+                    text: "系统名 "
+                },
+            }]
+    };
+    var tForm = new comForm();
+    tForm.init(formOption);
+
+    tModal.appendEle(tForm);
+}

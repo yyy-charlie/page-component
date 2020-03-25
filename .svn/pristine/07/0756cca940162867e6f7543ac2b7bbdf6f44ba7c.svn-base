@@ -1,0 +1,425 @@
+/**
+ * 导出ztree配置
+ */
+var fileContent = "";
+var ztreeId = "";
+
+var treeSetting = {
+    view: {
+        selectedMulti: false,
+        addHoverDom: addHoverDom,
+        removeHoverDom: null,
+        showLine: false,
+        txtSelectedEnable: false,
+    },
+    edit: {
+        showRemoveBtn: false,
+        showRenameBtn: false,
+        enable: false,
+        renameTitle: "编辑节点名称",
+        removeTitle: "删除节点",
+        drag: {
+            isCopy: false,
+            isMove: false
+        }
+    },
+    check: {
+        enable: false,
+        chkStyle: null,
+        chkboxType: null
+    },
+    callback: {
+        onClick: null
+    }
+};
+
+var addHoverDomObj = {};
+
+function getAddHoverDom() {
+    //显示新增按钮
+    var showAddBtn = $("#showAddBtn").val();
+    //处于编辑状态
+    var inEditingState = $("#inEditingState").val();
+    //显示重命名按钮
+    var showRenameBtn = $("#showRenameBtn").val();
+    //重命名显示限制
+    var renameBtnShowLimit = $("#renameBtnShowLimit").val();
+    if ("1" === showAddBtn) {
+        addHoverDomObj["showAddBtn"] = '  var aObj = $("#" + treeNode.tId + "_a");\n' +
+            '    if ($("#diyBtn_" + treeNode.tId).length > 0) return;\n' +
+            '    var editStr = "<span class=\'button add\' id=\'diyBtn_space_" + treeNode.tId + "\' > </span>"\n' +
+            '        + "<button type=\'button\' class=\'diyBtn1\' id=\'diyBtn_" + treeNode.tId\n' +
+            '        + "\' title=\'新增节点\' onfocus=\'this.blur();\'></button>";\n' +
+            '    aObj.append(editStr);\n';
+
+        addHoverDomObj["addBtnBind1"] = 'var btn = $("#diyBtn_" + treeNode.tId);\n' +
+            '                if (btn) btn.bind("click", function () {\n';
+        var addBtnTrigger = $("#addBtnTrigger").val();
+        //打开新增模态框
+        if (addBtnTrigger === "1") {
+            //新增节点请求地址
+            var addNodeUrl = $("#addNodeUrl").val();
+            addHoverDomObj["addModal"] = '//初始化模态框\n' +
+                '                    initAddModal(treeNode);\n' +
+                '\n' +
+                '                function initAddModal(treeNode) {\n' +
+                '                    var addModal;\n' +
+                '                    //modal\n' +
+                '                    var tModalConfigure = {\n' +
+                '                        id: \'addModule\',\n' +
+                '                        frameObj: $(\'#modal_department\'),\n' +
+                '                        title: \'新增\',\n' +
+                '                        callbacks: {\n' +
+                '                            onCommit: addCommit\n' +
+                '                        }\n' +
+                '                    };\n' +
+                '                    var tModal = new comModal();\n' +
+                '                    tModal.init(tModalConfigure);\n' +
+                '\n' +
+                '                    addModal.treeNode = treeNode;\n' +
+                '\n' +
+                '                    var formOption = {\n' +
+                '                        formId: \'moduleForm\',\n' +
+                '                        initContent: [\n' +
+                '                            {\n' +
+                '                                itemId: "addName",\n' +
+                '                                label: {\n' +
+                '                                    text: "新增名称"\n' +
+                '                                },\n' +
+                '                            }]\n' +
+                '                    };\n' +
+                '                    var tForm = new comForm();\n' +
+                '                    tForm.init(formOption);\n' +
+                '\n' +
+                '                    tModal.appendEle(tForm);\n' +
+                '\n' +
+                '                    function addCommit(e, oModal) {\n' +
+                '                        let oVal = oModal.getValues();\n' +
+                '                        var data = {\n' +
+                '                            name: oVal.addName,\n' +
+                '                            parentId: addModal.treeNode.id\n' +
+                '                        };\n' +
+                '                        requestAjax(\'post\', ' + addNodeUrl + ', \'false\', JSON.stringify(data), \'json\', function (res) {\n' +
+                '                            alert(res.description);\n' +
+                '                            if (res.code === 200) {\n' +
+                '                                //隐藏模态框\n' +
+                '                                oModal.hide();\n' +
+                '\n' +
+                '                                //新增节点\n' +
+                '                                var treeObj = $.fn.zTree.getZTreeObj(ztreeId);\n' +
+                '                                var arr = [];\n' +
+                '                                arr.push(res.data);\n' +
+                '                                treeObj.addNodes(addModal.treeNode, arr);\n' +
+                '                            }\n' +
+                '                        });\n' +
+                '                    }\n' +
+                '                }\n';
+        }
+        addHoverDomObj["addBtnBind2"] = '});\n';
+
+        //悬浮显示自定义编辑节点按钮
+        if (inEditingState === "1" && showRenameBtn === "2") {
+            addHoverDomObj["diyEditBtn"] = 'var aObj = $("#" + treeNode.tId + "_a");\n' +
+                '    if ($("#diyBtn_" + treeNode.tId + 2).length > 0) return;\n' +
+                '    var editStr = "<span class=\'button edit\' id=\'diyBtn_space_" + treeNode.tId + 2 + "\' > </span>"\n' +
+                '        + "<button type=\'button\' class=\'diyBtn1\' id=\'diyBtn_" + treeNode.tId + 2\n' +
+                '        + "\' title=\'修改节点\' onfocus=\'this.blur();\'></button>";\n' +
+                '    aObj.append(editStr);\n';
+
+            addHoverDomObj["diyEditBtnBind1"] = 'var btn2 = $("#diyBtn_" + treeNode.tId);\n' +
+                '                if (btn2) btn.bind("click", function () {\n';
+            let editBtnTrigger = $("#editBtnTrigger").val();
+            if (editBtnTrigger === '1') {
+                //新增节点请求地址
+                let editNodeUrl = $("#editNodeUrl").val();
+                addHoverDomObj["editModal"] = '//初始化模态框\n' +
+                    '                    initEditModal(treeNode);\n' +
+                    '\n' +
+                    '                function initEditModal(treeNode) {\n' +
+                    '                    var EditModal;\n' +
+                    '                    //modal\n' +
+                    '                    var tModalConfigure = {\n' +
+                    '                        id: \'editModule\',\n' +
+                    '                        frameObj: $(\'#modal_department\'),\n' +
+                    '                        title: \'修改\',\n' +
+                    '                        callbacks: {\n' +
+                    '                            onCommit: editCommit\n' +
+                    '                        }\n' +
+                    '                    };\n' +
+                    '                    var tModal = new comModal();\n' +
+                    '                    tModal.init(tModalConfigure);\n' +
+                    '\n' +
+                    '                    var formOption = {\n' +
+                    '                        formId: \'moduleForm\',\n' +
+                    '                        initContent: [\n' +
+                    '                            {\n' +
+                    '                                itemId: "editName",\n' +
+                    '                                label: {\n' +
+                    '                                    text: "修改名称"\n' +
+                    '                                },\n' +
+                    '                            }]\n' +
+                    '                    };\n' +
+                    '                    var tForm = new comForm();\n' +
+                    '                    tForm.init(formOption);\n' +
+                    '\n' +
+                    '                    tModal.appendEle(tForm);\n' +
+                    '\n' +
+                    '                    function editCommit(e, oModal) {\n' +
+                    '                        let oVal = oModal.getValues();\n' +
+                    '                        var data = {\n' +
+                    '                            name: oVal.editName,\n' +
+                    '                            parentId: editModal.treeNode.id\n' +
+                    '                        };\n' +
+                    '                        requestAjax(\'post\', ' + editNodeUrl + ', \'false\', JSON.stringify(data), \'json\', function (res) {\n' +
+                    '                            alert(res.description);\n' +
+                    '                            if (res.code === 200) {\n' +
+                    '                                //隐藏模态框\n' +
+                    '                                oModal.hide();\n' +
+                    '\n' +
+                    '                                //编辑节点\n' +
+                    '                                var treeObj = $.fn.zTree.getZTreeObj(' + ztreeId + ');\n' +
+                    '                                var nodes = treeObj.getNodesByParam("id", treeNode.id, null);\n' +
+                    '                                var node = nodes[0];\n' +
+                    '                                node.name = oVal.editName;\n' +
+                    '                                    treeObj.updateNode(node);\n' +
+                    '                            }\n' +
+                    '                        });\n' +
+                    '                    }\n' +
+                    '                }\n';
+            }
+
+            addHoverDomObj["diyEditBtnBind2"] = '});\n';
+        }
+    }
+}
+
+function addHoverDom() {
+    fileContent += "function addHoverDom(treeId, treeNode) {\n";
+    Object.keys(addHoverDomObj).forEach(function (key) {
+        fileContent += addHoverDomObj[key];
+    });
+    fileContent += "\n}\n";
+}
+
+function removeHoverDom() {
+    fileContent += 'function removeHoverDom(treeId, treeNode) {\n' +
+        '        $("#diyBtn_" + treeNode.tId).unbind().remove();\n' +
+        '        $("#diyBtn_" + treeNode.tId + 2).unbind().remove();\n' +
+        '    }\n\n'
+}
+
+function zTreeOnClick() {
+    let openNode = $("#openNode").val();
+    if ("0" === openNode) {
+        fileContent += "   function zTreeOnClick(event, treeId, treeNode) {\n" +
+            "        //点击自动展开/折叠此节点\n" +
+            "        ztreeId.oTree.expandNode(treeNode, null, false, false);\n" +
+            "    }\n\n"
+    } else {
+        fileContent += "   function zTreeOnClick(event, treeId, treeNode) {\n" +
+            "    }\n\n"
+    }
+}
+
+function setZtreeConfig() {
+    //处于编辑状态
+    let inEditingState = $("#inEditingState").val();
+    //显示重命名按钮
+    let showRenameBtn = $("#showRenameBtn").val();
+    //显示删除按钮
+    let showRemoveBtn = $("#showRemoveBtn").val();
+    //显示单选/复选框
+    let showRadioOrCheckbox = $("#showRadioOrCheckbox").val();
+    //选框类型（单选/复选）
+    let chkStyle = $("#chkStyle").val();
+    //勾选后是否影响父节点
+    let influenceParentNode = $("#influenceParentNode").val();
+    //取消勾选后是否影响子节点
+    let influenceChildrenNode = $("#influenceChildrenNode").val();
+    //显示节点间的连线
+    let showLine = $("#showLine").val();
+    //允许可以选择 zTree DOM 内的文本
+    let txtSelectedEnable = $("#txtSelectedEnable").val();
+    //同时选中多个节点
+    let selectedMulti = $("#selectedMulti").val();
+
+    setRenameConfig();
+    setSameNameEditConfig(showRemoveBtn, "showRemoveBtn");
+    setSameNameViewConfig(showLine, "showLine");
+    setSameNameViewConfig(txtSelectedEnable, "txtSelectedEnable");
+    setSameNameViewConfig(selectedMulti, "selectedMulti");
+
+    if ("1" === inEditingState) {
+        treeSetting.edit.enable = true;
+        if ("0" !== showRenameBtn) {
+            treeSetting.edit.renameTitle = $("#renameTitle").val();
+        }
+    }
+    if ("1" === showRemoveBtn) {
+        treeSetting.edit.removeTitle = $("#deleteTitle").val();
+    }
+    if ("1" === showRadioOrCheckbox) {
+        treeSetting.check.enable = true;
+        if ("1" === chkStyle) {
+            treeSetting.check.chkStyle = "checkbox";
+            var chkboxType = {};
+            switch (influenceParentNode) {
+                case "0":
+                    chkboxType["Y"] = "";
+                    break;
+                case "1":
+                    chkboxType["Y"] = "p";
+                    break;
+                case "2":
+                    chkboxType["Y"] = "s";
+                    break;
+                case "3":
+                    chkboxType["Y"] = "ps";
+                    break;
+            }
+            switch (influenceChildrenNode) {
+                case "0":
+                    chkboxType["N"] = "";
+                    break;
+                case "1":
+                    chkboxType["N"] = "p";
+                    break;
+                case "2":
+                    chkboxType["N"] = "s";
+                    break;
+                case "3":
+                    chkboxType["N"] = "ps";
+                    break;
+            }
+            treeSetting.check.chkboxType = JSON.stringify(chkboxType);
+        } else {
+            treeSetting.check.chkStyle = "radio";
+        }
+    }
+    treeSetting.view.addHoverDom = addHoverDom;
+    treeSetting.view.removeHoverDom = removeHoverDom;
+    treeSetting.callback.onClick = zTreeOnClick;
+}
+
+function setRenameConfig() {
+    //编辑状态
+    let inEditingState = $("#inEditingState").val();
+    //显示重命名按钮
+    let showRenameBtn = $("#showRenameBtn").val();
+    //重命名按钮显示限制
+    let renameBtnShowLimit = $("#renameBtnShowLimit").val();
+    if (inEditingState === "1" && showRenameBtn === "1") {
+        if (renameBtnShowLimit === "1") {
+            treeSetting.edit.showRenameBtn = true;
+        } else {
+            treeSetting.edit.showRenameBtn = setRenameBtn;
+            fileContent += "function setRenameBtn(treeId, treeNode) {\n" +
+                "        return !treeNode.isParent;\n" +
+                "    }\n\n";
+        }
+    }
+}
+
+function setRemoveConfig() {
+    //显示重命名按钮
+    let inEditingState = $("#inEditingState").val();
+    let showRemoveBtn = $("#showRemoveBtn").val();
+    let deleteBtnShowLimit = $("#deleteBtnShowLimit").val();
+    if (inEditingState === "1" && "1" === showRemoveBtn) {
+        if ("1" === deleteBtnShowLimit) {
+            treeSetting.edit.showRemoveBtn = true;
+        } else {
+            treeSetting.edit.showRemoveBtn = setRemoveBtn;
+            fileContent += 'function setRemoveBtn(treeId, treeNode) {\n' +
+                ' return !treeNode.isParent;\n' +
+                '}\n\n'
+        }
+    }
+}
+
+
+//父节点不显示编辑名称按钮
+function setRenameBtn() {
+}
+
+function setRemoveBtn() {
+
+}
+
+/**
+ * 设置相同名称的edit配置
+ * @param boolConfig
+ * @param configName
+ */
+function setSameNameEditConfig(boolConfig, configName) {
+    if ("1" === boolConfig) {
+        treeSetting.edit[configName] = true;
+    }
+}
+
+/**
+ * 设置相同名称的view配置
+ * @param boolConfig
+ * @param configName
+ */
+function setSameNameViewConfig(boolConfig, configName) {
+    if ("1" === boolConfig) {
+        treeSetting.view[configName] = true;
+    }
+}
+
+
+function requestZtreeAjax() {
+    var treeUrl = $("#treeUrl").val();
+    fileContent += 'function requestZtreeAjax() {\n' +
+        '    requestAjax(\'post\', ' + treeUrl + ', \'false\', null, \'json\', function (res) {\n' +
+        '        var _data = res.data;\n' +
+        '        var ztreeData = [];\n' +
+        '        let nodes = ztreeFormat(ztreeData, _data);\n' +
+        '        $.fn.zTree.init(ztreeId, ztreeId.setting, nodes);\n' +
+        '        ztreeId.oTree = $.fn.zTree.getZTreeObj(ztreeId);\n' +
+        '    });\n' +
+        '\n' +
+        '    function ztreeFormat(ztreeData, data) {\n' +
+        '        $.each(data, function (index, ele) {\n' +
+        '            var node = {\n' +
+        '                id: ele.id,\n' +
+        '                pId: ele.parentId,\n' +
+        '                objectId: ele.objectId,\n' +
+        '                name: ele.name,\n' +
+        '                open: true\n' +
+        '            };\n' +
+        '            ztreeData.push(node);\n' +
+        '            var children = ele.children;\n' +
+        '            if (children != null && children.length > 0) {\n' +
+        '                ztreeFormat(ztreeData, children)\n' +
+        '            }\n' +
+        '        });\n' +
+        '        return ztreeData;\n' +
+        '    }\n' +
+        '}'
+}
+
+function exportTreeConfig() {
+    ztreeId = $("#ztreeId").val();
+    setZtreeConfig();
+    fileContent = "var " + ztreeId + " = " + "$('#" + ztreeId + "');\n";
+    fileContent += "(function initSystem() {\n" +
+        "    loadTree();\n" +
+        "})();\n";
+    fileContent += "function loadTree(){\n" + ztreeId + ".setting = " + JSON.stringify(treeSetting);
+
+    requestZtreeAjax();
+
+    fileContent += "\n}\n";
+
+    getAddHoverDom();
+    addHoverDom();
+
+    removeHoverDom();
+    zTreeOnClick();
+    setRenameConfig();
+    setRemoveConfig();
+    downloadFile("ztreeConfig.js", fileContent);
+}
+

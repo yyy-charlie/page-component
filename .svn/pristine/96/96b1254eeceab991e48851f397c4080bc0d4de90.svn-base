@@ -1,0 +1,24 @@
+package com.treemanage.treecomponent.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * @ClassName JumpToHtmlController
+ * @Description TODO
+ * @Author ycn
+ * @Date 2019-09-29
+ **/
+@Controller
+public class JumpToHtmlController {
+
+    @RequestMapping("/")
+    public String getBoClassManage() {
+        return "/boClassManage";
+    }
+
+    @RequestMapping("/meterManage")
+    public String getMeterManage() {
+        return "/meterManage";
+    }
+}

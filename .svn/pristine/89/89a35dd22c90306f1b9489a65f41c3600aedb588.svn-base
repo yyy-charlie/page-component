@@ -1,0 +1,19 @@
+package com.treemanage.treecomponent.vo;
+
+
+import lombok.Data;
+
+/**
+ * @author Mist
+ * @version 1.0
+ * @created 29-12-2019 9:44:27
+ */
+@Data
+public class VOBeanTreeStuctureInfo {
+
+	private Long id;				//主键
+	private String name;			//BO树名称
+	private String description;		//描述
+	private boolean ifNameRepeat;	//是否允许名字重复
+
+}

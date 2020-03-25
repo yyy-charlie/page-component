@@ -1,0 +1,463 @@
+var boTree = $('#boTree');
+var boObjectTree = $('#boObjectTree');
+var treeStructurePreviewTree = $('#treeStructurePreviewTree');
+
+var addSystemModal = $('#addSystemModal');
+var addBOTreeModal = $('#addBOTreeModal');
+var editSystemModal = $('#editSystemModal');
+
+var boTreeNode;
+
+(function initSystem() {
+
+    loadTree();
+
+})();
+
+function loadTree() {
+    boTree.setting = {
+        view: {
+            selectedMulti: false,
+            addHoverDom: addHoverDom,
+            removeHoverDom: removeHoverDom
+        },
+        data: {
+            simpleData: {
+                enable: true
+            }
+        },
+        edit: {
+            showRemoveBtn: false,
+            showRenameBtn: false,
+            enable: true,
+            drag: {
+                isCopy: false,
+                isMove: false
+            }
+        },
+        callback: {
+            onClick: boTreeOnClick
+        }
+    };
+
+    requestAjax('post', 'beanTreeStructure/getTreeView', 'false', null, 'json', function (res) {
+        // requestAjax('post', 'http://rap2api.taobao.org/app/mock/241077/getTreeView2', 'false', null, 'json', function (res) {
+        if (res.code === 200) {
+            var _data = res.data;
+            ztreeData = [];
+            let nodes = ztreeFormat(ztreeData, _data);
+            $.fn.zTree.init(boTree, boTree.setting, nodes);
+            boTree.oTree = $.fn.zTree.getZTreeObj("boTree");
+        }
+    });
+
+    function addHoverDom(treeId, treeNode) {
+        //只有根节点有新增和修改按钮
+        if (treeNode.level === 0) {
+            addBOTreeBtn(treeNode);
+            //节点的修改名称按钮
+            editNodeName(treeNode);
+        }
+        //没有子节点的节点有删除按钮
+        if (!treeNode.children && treeNode.level !== 1) {
+            deleteSystemBtn(treeNode);
+        }
+    }
+
+    function addBOTreeBtn(treeNode) {
+        boTreeNode = treeNode;
+        var sObj = $("#" + treeNode.tId + "_span");
+
+        if (treeNode.editNameFlag || $("#addBtn_" + treeNode.tId).length > 0) return;
+
+        var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+            + "' title='新增BO树' onfocus='this.blur();'></span>";
+
+        sObj.after(addStr);
+
+        var btn = $("#addBtn_" + treeNode.tId);
+
+        if (btn) btn.bind("click", function () {
+
+            //销毁BO对象树
+            $.fn.zTree.destroy("boObjectTree");
+
+            addBOTreeModal.treeNode = treeNode;
+
+            $("#addBOTreeModal").modal('show');
+
+            boObjectTree.setting = {
+                view: {
+                    selectedMulti: false,
+                    // addDiyDom: addDiyDom
+                },
+                data: {
+                    simpleData: {
+                        enable: true
+                    }
+                },
+                check: {
+                    enable: true,
+                    chkStyle: "checkbox",
+                    chkboxType: {"Y": "", "N": ""}
+                },
+                edit: {
+                    showRemoveBtn: false,
+                    showRenameBtn: false,
+                    enable: true,
+                    drag: {
+                        isCopy: false,
+                        isMove: false
+                    }
+                },
+                callback: {
+                    beforeCheck: zTreeBeforeCheck
+                }
+            };
+
+            requestAjax('post', 'beanStructure/getDescendantsView?parentNodeId=' + treeNode.id, 'false', null, 'json', function (res) {
+                if (res.code === 200) {
+                    var _data = res.data;
+                    var ztreeData = [];
+                    let nodes = ztreeFormat(ztreeData, _data);
+                    $.fn.zTree.init(boObjectTree, boObjectTree.setting, nodes);
+                    boObjectTree.oTree = $.fn.zTree.getZTreeObj("boObjectTree");
+                }
+            });
+
+            return false;
+        });
+
+
+    }
+
+    function deleteSystemBtn(treeNode) {
+        var sObj = $("#" + treeNode.tId + "_span");
+        if (treeNode.editNameFlag || $("#addBtn_" + treeNode.tId + "2").length > 0) return;
+
+        var addStr = "<span class='button remove' id='addBtn_" + treeNode.tId + "2"
+            + "' title='删除' onfocus='this.blur();'></span>";
+
+        sObj.after(addStr);
+
+        var btn = $("#addBtn_" + treeNode.tId + "2");
+
+        if (btn) btn.bind("click", function () {
+            if (confirm("确认删除吗？")) {
+                requestAjax('post', 'beanTreeStructure/deleteSystem?nodeId=' + treeNode.id, 'false', null, 'json', function (res) {
+                    alert(res.description);
+                    if (res.code === 200) {
+                        //删除节点
+                        var treeObj = $.fn.zTree.getZTreeObj("boTree");
+                        //根据节点数据的属性搜索
+                        var nodes = treeObj.getNodesByParam("id", treeNode.id, null);
+                        for (let i = 0, l = nodes.length; i < l; i++) {
+                            treeObj.removeNode(nodes[i]);
+                        }
+                    }
+                });
+            }
+            return false;
+        });
+    }
+
+    function editNodeName(treeNode) {
+        var sObj = $("#" + treeNode.tId + "_span");
+
+        if (treeNode.editNameFlag || $("#addBtn_" + treeNode.tId + 3).length > 0) return;
+
+        var addStr = "<span class='button edit' id='addBtn_" + treeNode.tId + 3
+            + "' title='编辑' onfocus='this.blur();'></span>";
+
+        sObj.after(addStr);
+
+        var btn = $("#addBtn_" + treeNode.tId + 3);
+
+        if (btn) btn.bind("click", function () {
+
+            //modal
+            var tModalConfigure = {
+                id: 'editSystemModal',
+                frameObj: $('#modal_department'),
+                title: '编辑节点',
+                callbacks: {
+                    onCommit: editNodeNameCommit
+                }
+            };
+            var tModal = new comModal();
+            tModal.init(tModalConfigure);
+
+            editSystemModal.treeNode = treeNode;
+
+            var formOption = {
+                formId: 'moduleForm',
+                initContent: [
+                    {
+                        itemId: "editNodeName",
+                        label: {
+                            text: "更新名称"
+                        },
+                        value: treeNode.name
+                    }]
+            };
+            var tForm = new comForm();
+            tForm.init(formOption);
+
+            tModal.appendEle(tForm);
+            return false;
+        });
+
+        function editNodeNameCommit(e, oModal) {
+            let oVal = oModal.getValues();
+
+            var data = {
+                id: treeNode.objectId,
+                name: oVal.editNodeName
+            };
+            requestAjax('post', 'beanTreeStructure/updateSystem', 'false', JSON.stringify(data), 'json', function (res) {
+                alert(res.description);
+                if (res.code === 200) {
+                    //隐藏模态框
+                    oModal.hide();
+
+                    //更新节点
+                    var treeObj = $.fn.zTree.getZTreeObj("boTree");
+                    //根据节点数据的属性搜索
+                    var nodes = treeObj.getNodesByParam("id", treeNode.id, null);
+                    var node = nodes[0];
+                    node.name = oVal.editNodeName;
+                    treeObj.updateNode(node);
+                }
+            });
+        }
+    }
+
+    function removeHoverDom(treeId, treeNode) {
+        $("#addBtn_" + treeNode.tId).unbind().remove();
+        $("#addBtn_" + treeNode.tId + "2").unbind().remove();
+        $("#addBtn_" + treeNode.tId + "3").unbind().remove();
+    }
+
+    function ztreeFormat(ztreeData, data) {
+        $.each(data, function (index, ele) {
+            var node = {
+                id: ele.id,
+                pId: ele.parentId,
+                objectId: ele.objectId,
+                name: ele.name,
+                open: true
+            };
+            ztreeData.push(node);
+            var children = ele.children;
+            if (children != null && children.length > 0) {
+                ztreeFormat(ztreeData, children)
+            }
+        });
+        return ztreeData;
+    }
+
+    function boTreeOnClick(event, treeId, treeNode) {
+        requestAjax('post', 'beanTreeStructure/getBeanTreeStructureInfo?nodeId=' + treeNode.id, false, null, 'json', function (res) {
+                if (res.code === 200) {
+                    var result = res.data;
+                    $("#viewBOTreeName").val(result.name);
+                    $("#viewBOTreeDescription").val(result.description);
+                    if (result.ifNameRepeat) {
+                        $("#viewIfNameRepeat").val("是");
+                    } else {
+                        $("#viewIfNameRepeat").val("否");
+                    }
+                } else {
+                    $("#viewBOTreeName").val('');
+                    $("#viewBOTreeDescription").val('');
+                    $("#viewIfNameRepeat").val('');
+                }
+            }
+        );
+
+        //设置导出树配置按钮是否可用
+        if (treeNode.level === 1) {
+            $("#exportTreeConfig").attr('disabled', false);
+        } else {
+            $("#exportTreeConfig").attr('disabled', true);
+        }
+
+
+        //BO树结构预览
+        treeStructurePreviewTree.setting = {
+            view: {
+                selectedMulti: false,
+                addHoverDom: addHoverDom,
+                removeHoverDom: removeHoverDom
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            edit: {
+                showRemoveBtn: false,
+                showRenameBtn: false,
+                enable: true,
+                drag: {
+                    isCopy: false,
+                    isMove: false
+                }
+            },
+            callback: {
+                onClick: boTreeOnClick
+            }
+        };
+
+        requestAjax('post', 'beanTreeStructure/getBeanTreeStructureInfoView?nodeId=' + treeNode.id, 'false', null, 'json', function (res) {
+            if (res.code === 200) {
+                var _data = res.data;
+                ztreeData = [];
+                let nodes = ztreeFormat(ztreeData, _data);
+                $.fn.zTree.init(boTree, boTree.setting, nodes);
+                boTree.oTree = $.fn.zTree.getZTreeObj("treeStructurePreviewTree");
+            }
+        });
+    }
+
+    function zTreeBeforeCheck(treeId, treeNode) {
+        var checkStatus = treeNode.checked;
+        if (checkStatus) {
+            delete boObjectTree.setting.view['addDiyDom'];
+            $("#" + treeNode.tId + "_a select").remove();
+        } else {
+            boObjectTree.setting.view['addDiyDom'] = addDiyDom(treeId, treeNode);
+        }
+    }
+
+    //悬浮BO对象树显示的图标
+    function addDiyDom(treeId, treeNode) {
+        var aObj = $("#" + treeNode.tId + "_a");
+        if ($("#diyBtn_" + treeNode.id).length > 0) return;
+        var editStr = "<span id='diyBtn_space_" + treeNode.id + "' ></span>"
+            + "<select  id='diyBtn_" + treeNode.id
+            + "' title='" + treeNode.name + "' onfocus='this.blur();'>" +
+            "<option value='true'>持久化</option><option value='false'>不持久化</option></select>";
+        aObj.append(editStr);
+    }
+}
+
+/**
+ * 新增系统
+ */
+function addBOTreeSystemBtn() {
+    addSystemModal.treeData = null;
+
+    //modal
+    var tModalConfigure = {
+        id: 'addSystem',
+        frameObj: $('#modal_department'),
+        title: '新增系统',
+        callbacks: {
+            onCommit: addSystemCommit
+        }
+    };
+    var tModal = new comModal();
+    tModal.init(tModalConfigure);
+
+    var formOption = {
+        formId: 'moduleForm',
+        initContent: [
+            {
+                itemId: "systemName",
+                label: {
+                    text: "系统名 "
+                },
+            }]
+    };
+    var tForm = new comForm();
+    tForm.init(formOption);
+
+    tModal.appendEle(tForm);
+
+    function addSystemCommit(e, oModal) {
+        let oVal = oModal.getValues();
+
+        var data = {
+            name: oVal.systemName
+        };
+        requestAjax('post', 'beanTreeStructure/addSystem', 'false', JSON.stringify(data), 'json', function (res) {
+            alert(res.description);
+            if (res.code === 200) {
+                //隐藏模态框
+                oModal.hide();
+
+                //新增节点
+                var treeObj = $.fn.zTree.getZTreeObj("boTree");
+                var arr = [];
+                arr.push(res.data);
+                treeObj.addNodes(addSystemModal.treeNode, arr);
+            }
+        });
+    }
+
+}
+
+function addBOTreeCommit() {
+    var name = $("#boTreeName").val();
+    var description = $("#boTreeDescription").val();
+    var ifNameRepeat = $("#ifNameRepeat").val();
+
+    //获取选中的对象
+    var treeObj = $.fn.zTree.getZTreeObj("boObjectTree");
+    var nodes = treeObj.getCheckedNodes(true);
+
+    var nodeStructureInfos = [];
+    $.each(nodes, function (index, item) {
+        var ifPersistence = $('#diyBtn_' + item.id).val();
+        var nodeStructureInfo = {
+            beanStructureId: item.objectId,
+            ifPersistence: ifPersistence
+        };
+        nodeStructureInfos.push(nodeStructureInfo);
+    });
+
+    var data = {
+        name: name,
+        description: description,
+        ifNameRepeat: ifNameRepeat,
+        nodeStructureInfos: nodeStructureInfos
+    };
+    requestAjax('post', 'beanTreeStructure/addBeanTreeStuctureInfo?parentNodeId=' + boTreeNode.id, 'false', JSON.stringify(data), 'json', function (res) {
+        alert(res.description);
+        if (res.code === 200) {
+            //隐藏模态框
+            $("#addBOTreeModal").modal('hide');
+
+            //导出树配置按钮可用
+            $("#exportTreeConfig").attr('disabled', false);
+
+
+            $("#boTreeName").val('');
+            $("#boTreeDescription").val('');
+
+            //新增节点
+            var treeObj = $.fn.zTree.getZTreeObj("boTree");
+            var arr = [{
+                id: res.data.id,
+                objectId: res.data.objectId,
+                name: res.data.data.name,
+                pid: res.data.parentId
+            }];
+            var newNode = treeObj.addNodes(boTreeNode, arr)[0];
+
+            //点击新增的节点
+            $("#" + newNode.tId + "_a").trigger('click');
+        }
+    });
+}
+
+//导出树配置
+function exportTreeConfigBtn() {
+    var treeObj = $.fn.zTree.getZTreeObj("boTree");
+    var nodes = treeObj.getSelectedNodes();
+    var nodeId = nodes[0].id;
+    var name = nodes[0].name;
+    var url = "beanTreeStructure/exportBeanTreeStructureInfo?nodeId=" + nodeId;
+    exportFile(url, name, "java");
+}

@@ -1,0 +1,18 @@
+package com.treemanage.treecomponent.export.impl;
+
+import com.treemanage.treecomponent.bo.BeanTreeStuctureInfo;
+import com.treemanage.treecomponent.export.intf.ExportBeanTree;
+import org.springframework.stereotype.Service;
+
+/**
+ * @Author: Mist
+ * @Version: 1.0
+ * @Date: 2020/1/4 11:46
+ */
+@Service
+public class ExportBeanTreeImpl implements ExportBeanTree {
+    @Override
+    public boolean exportBeanTreeStructureInfo(BeanTreeStuctureInfo beanTreeStuctureInfo, String url) {
+        return false;
+    }
+}

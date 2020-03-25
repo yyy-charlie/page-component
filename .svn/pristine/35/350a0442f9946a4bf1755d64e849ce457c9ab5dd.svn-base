@@ -1,0 +1,708 @@
+var boObjTree = $('#boObjTree');
+
+var addSystemModal = $('#addSystemModal');
+var addModuleModal = $('#addModuleModal');
+
+var objectInfoTable = new commTable();
+
+(function initSystem() {
+
+    loadTree();
+
+    initTable();
+})();
+
+/**
+ * 初始化表格
+ */
+function initTable() {
+    let header = [
+        {
+            field: 'id',
+            title: 'id',
+            visible: false
+        },
+        {
+            field: 'name',
+            title: '属性名',
+        },
+        {
+            field: 'description',
+            title: '属性描述'
+        },
+        {
+            field: 'javaType',
+            title: '类型'
+        },
+        {
+            field: 'ifId',
+            title: '主键'
+        },
+        {
+            field: 'ifForeignKey',
+            title: '外键'
+        },
+        {
+            field: 'ifIgnoreParam',
+            title: '不持久化'
+        }
+    ];
+
+    objectInfoTable.init({
+        tableID: "objectInfoTable",
+        //isNeedOperate和otherOperationArr配套使用
+        isNeedOperate: true,
+        isNeedDetails: true,
+        otherOperationArr: ['update'],
+        otherDetailsArr: ['objectInfo'],
+        //操作按钮
+        operate: function () {
+            return updateRowBtn();
+        },
+        // 详情按钮
+        details: function () {
+            return getAttrInfoBtn();
+        },
+        // 点击查看之后的方法
+        objectInfo: function (e, value, row, index) { //模块的步骤集合
+            getAttrInfo(e, value, row, index);
+        },
+        //点击修改之后的方法
+        update: function (e, value, row, index) { //模块的步骤集合
+            updateAttrInfo(e, value, row, index);
+        }
+    }, {
+        showRefresh: false,
+        showExport: false,
+        showColumns: false,
+        showPaginationSwitch: false,
+        height: 500,
+        pageNumber: 1,
+        pageSize: 1000,
+        pageList: [],
+        columns: header
+    });
+
+
+    function updateRowBtn() {
+        return '<button type="button" class="update btn btn-primary btn-xs">&nbsp;修改&nbsp;</button>&nbsp;&nbsp;'
+    }
+
+    function getAttrInfoBtn() {
+        return '<button type="button" class="objectInfo btn btn-primary btn-xs">&nbsp;详情&nbsp;</button>&nbsp;&nbsp;'
+    }
+
+    function getAttrInfo(e, value, row, index) {
+        //modal
+        let tModalConfigure = {
+            id: 'getAttrInfoModal',
+            frameObj: $('#modal_department'),
+            title: '查看属性详情',
+            type: 'browse'
+        };
+        let tModal = new comModal();
+        tModal.init(tModalConfigure);
+
+        var formOption = {
+            formId: 'testForm',
+            initContent: [{
+                itemId: "ifIdLabel",
+                label: {
+                    text: "主键"
+                },
+                value: row.ifId,
+                enable: false,
+                required: false
+            }, {
+                itemId: "ifForeignKeyLabel",
+                label: {
+                    text: "外键"
+                },
+                value: row.ifForeignKey,
+                enable: false,
+                required: false
+            }, {
+                itemId: "ifIgnoreParamLabel",
+                label: {
+                    text: "不持久化"
+                },
+                value: row.ifIgnoreParam,
+                enable: false,
+                required: false
+            }, {
+                itemId: "columnLabel",
+                label: {
+                    text: "持久化字段名"
+                },
+                value: row.column,
+                enable: false,
+                required: false
+            }]
+        };
+
+        var primaryKeyGenerationRules = {
+            itemId: "primaryKeyGenerationRulesLabel",
+            label: {
+                text: "主键生成规则"
+            },
+            value: row.generatedValue,
+            enable: false,
+            required: false
+        };
+        if (row.ifId === "是") {
+            var arr1 = formOption.initContent.slice(0, 1);
+            var arr2 = formOption.initContent.slice(1, formOption.initContent.length - 1);
+            formOption.initContent = arr1.concat(primaryKeyGenerationRules).concat(arr2);
+        }
+        var tForm = new comForm();
+        tForm.init(formOption);
+
+        tModal.appendEle(tForm);
+
+    }
+
+
+    function updateAttrInfo(e, value, row, index) {
+        //modal
+        let tModalConfigure = {
+            id: 'updateAttrInfoModal',
+            frameObj: $('#modal_department'),
+            title: '修改属性信息',
+            callbacks: {
+                onCommit: updateAttrCommit
+            }
+        };
+        let tModal = new comModal();
+        tModal.init(tModalConfigure);
+
+        var formOption = {
+            formId: 'testForm',
+            initContent: [{
+                itemId: "ifId",
+                label: {
+                    text: '主键'
+                },
+                type: "select",
+                options: {                                                          //现在不接收地址，参数要确定
+                    content: [{
+                        value: "是",
+                        text: "是"
+                    }, {
+                        value: "否",
+                        text: "否"
+                    }]
+                },
+                value: row.ifId,                                                               //select与input相同形式
+                disable: true,
+            }, {
+                itemId: "ifForeignKey",
+                label: {
+                    text: '外键'
+                },
+                type: "select",
+                options: {
+                    content: [{
+                        value: "是",
+                        text: "是"
+                    }, {
+                        value: "否",
+                        text: "否"
+                    }]
+                },
+                value: row.ifForeignKey,                                                               //select与input相同形式
+                disable: true,
+            }, {
+                itemId: "ifIgnoreParam",
+                label: {
+                    text: '不持久化'
+                },
+                type: "select",
+                options: {
+                    content: [{
+                        value: "是",
+                        text: "是"
+                    }, {
+                        value: "否",
+                        text: "否"
+                    }]
+                },
+                value: row.ifIgnoreParam,                                                               //select与input相同形式
+                disable: true,
+            }, {
+                itemId: "column",
+                label: {
+                    text: "持久化字段名"
+                },
+                value: row.column,
+            }]
+        };
+        var tForm = new comForm();
+        tForm.init(formOption);
+
+        tModal.appendEle(tForm);
+
+        tForm.items[0].dom.self.onchange = function (e) {
+            if (this.value === "否") {
+                tForm.removeItem(tForm.items[1]);
+            } else {
+                var temp = new comItem();
+                temp.oInit({
+                    itemId: "primaryKeyGenerationRulesLabel",
+                    label: {
+                        text: "主键生成规则"
+                    },
+                    type: "select",
+                    options: {
+                        content: [{
+                            value: "主键生成规则",
+                            text: "主键生成规则"
+                        }]
+                    },
+                    value: "主键生成规则"
+                });
+                tForm.insertItem(temp, tForm.items[0], "after");
+            }
+        };
+
+        /**
+         * 提交修改模块步骤
+         */
+        function updateAttrCommit(e, oModal) {
+            let oVal = oModal.getValues();
+
+            var data = {
+                ifId: oVal.ifId,
+                ifForeignKey: oVal.ifForeignKey,
+                ifIgnoreParam: oVal.ifIgnoreParam,
+                column: oVal.column
+            };
+
+            requestAjax('post', 'http://rap2api.taobao.org/app/mock/241077/updateBeanStructureInfo?nodeId=' + row.id, 'false', JSON.stringify(data), 'json', function (res) {
+                alert(res.description);
+                //隐藏模态框
+                oModal.hide();
+                //刷新模块表格
+                var data = res.data.attributes[0];
+                objectInfoTable.hdstTable("updateRow", {
+                    index: index,
+                    row: data
+                });
+            });
+        }
+    }
+}
+
+
+function loadTree() {
+    boObjTree.setting = {
+        view: {
+            selectedMulti: false,
+            addHoverDom: addHoverDom,
+            removeHoverDom: removeHoverDom
+        },
+        data: {
+            simpleData: {
+                enable: true
+            }
+        },
+
+        edit: {
+            showRemoveBtn: false,
+            showRenameBtn: false,
+            enable: true,
+            drag: {
+                isCopy: false,
+                isMove: false
+            }
+        },
+        callback: {
+            onClick: boObjTreeOnClick
+        }
+    };
+
+    requestAjax('post', 'http://rap2api.taobao.org/app/mock/241077/getTreeView', 'false', null, 'json', function (res) {
+        if (res.code === 200) {
+            var _data = res.data;
+            let nodes = ztreeFormat(_data);
+            $.fn.zTree.init(boObjTree, boObjTree.setting, nodes);
+            boObjTree.oTree = $.fn.zTree.getZTreeObj("boObjTree");
+        }
+    });
+
+
+}
+
+function boObjTreeOnClick(event, treeId, treeNode) {
+    //查询步骤模块
+    requestAjax('post', 'http://rap2api.taobao.org/app/mock/241077/getBeanStructureInfo22?nodeId=' + treeNode.id, false, null, 'json', function (res) {
+            var result = res.data;
+            $("#className").text(result.beanName);
+            objectInfoTable.hdstTable("removeAll");
+            objectInfoTable.appendData(result.attributes);
+        }
+    );
+}
+
+/***----------authorityManage requestAjax-----------------**/
+function requestAjax(type, url, async, data, dataType, callback) {
+    $.ajax({
+        type: type,
+        contentType: "application/json",
+        url: url,
+        beforeSend: function () {
+            console.log("准备好发送请求了");
+        },
+        complete: function () {
+            console.log("请求发送完毕了");
+        },
+        async: async,
+        data: data,
+        dataType: dataType,
+        success: function (result) {
+            callback(result);
+        },
+        error: function (result) {
+            callback(result);
+        }
+    });
+}
+
+
+function addHoverDom(treeId, treeNode) {
+    //只有根节点有新增按钮
+    if (treeNode.level == 0) {
+        addModelBtn(treeNode)
+    }
+    //没有子节点的节点有删除按钮
+    if (!treeNode.children) {
+        deleteSysOrModuleBtn(treeNode);
+    }
+    //节点的修改名称按钮
+    editNodeName(treeNode);
+}
+
+function addModelBtn(treeNode) {
+    var sObj = $("#" + treeNode.tId + "_span");
+
+    if (treeNode.editNameFlag || $("#addBtn_" + treeNode.tId).length > 0) return;
+
+    var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+        + "' title='新增模块' onfocus='this.blur();'></span>";
+
+    sObj.after(addStr);
+
+    var btn = $("#addBtn_" + treeNode.tId);
+
+    if (btn) btn.bind("click", function () {
+
+        //modal
+        var tModalConfigure = {
+            id: 'addModule',
+            frameObj: $('#modal_department'),
+            title: '新增模块',
+            callbacks: {
+                onCommit: addModuleCommit
+            }
+        };
+        var tModal = new comModal();
+        tModal.init(tModalConfigure);
+
+        addModuleModal.treeNode = treeNode;
+
+        var formOption = {
+            formId: 'moduleForm',
+            initContent: [
+                {
+                    itemId: "sysModule",
+                    label: {
+                        text: "模块名 "
+                    },
+                }]
+        };
+        var tForm = new comForm();
+        tForm.init(formOption);
+
+        tModal.appendEle(tForm);
+        return false;
+    });
+}
+
+function deleteSysOrModuleBtn(treeNode) {
+    var sObj = $("#" + treeNode.tId + "_span");
+    if (treeNode.editNameFlag || $("#addBtn_" + treeNode.tId + "2").length > 0) return;
+
+    var addStr = "<span class='button remove' id='addBtn_" + treeNode.tId + "2"
+        + "' title='删除' onfocus='this.blur();'></span>";
+
+    sObj.after(addStr);
+
+    var btn = $("#addBtn_" + treeNode.tId + "2");
+
+    if (btn) btn.bind("click", function () {
+        if (confirm("确认删除吗？")) {
+            requestAjax('post', 'http://rap2api.taobao.org/app/mock/241077/getBeanStructureInfo2?nodeId=' + treeNode.id, 'false', null, 'json', function (res) {
+                alert(res.description);
+                if (res.code === 200) {
+                    //删除节点
+                    var treeObj = $.fn.zTree.getZTreeObj("boObjTree");
+                    //根据节点数据的属性搜索
+                    var nodes = treeObj.getNodesByParam("id", treeNode.id, null);
+                    for (let i = 0, l = nodes.length; i < l; i++) {
+                        treeObj.removeNode(nodes[i]);
+                    }
+                }
+            });
+        }
+        return false;
+    });
+}
+
+function editNodeName(treeNode) {
+    var sObj = $("#" + treeNode.tId + "_span");
+
+    if (treeNode.editNameFlag || $("#addBtn_" + treeNode.tId).length > 0) return;
+
+    var addStr = "<span class='button edit' id='addBtn_" + treeNode.tId
+        + "' title='编辑' onfocus='this.blur();'></span>";
+
+    sObj.after(addStr);
+
+    var btn = $("#addBtn_" + treeNode.tId);
+
+    if (btn) btn.bind("click", function () {
+
+        //modal
+        var tModalConfigure = {
+            id: 'addModule',
+            frameObj: $('#modal_department'),
+            title: '编辑节点',
+            callbacks: {
+                onCommit: editNodeNameCommit
+            }
+        };
+        var tModal = new comModal();
+        tModal.init(tModalConfigure);
+
+        addModuleModal.treeNode = treeNode;
+
+        var formOption = {
+            formId: 'moduleForm',
+            initContent: [
+                {
+                    itemId: "editNodeName",
+                    label: {
+                        text: "更新名称"
+                    },
+                    value: treeNode.name
+                }]
+        };
+        var tForm = new comForm();
+        tForm.init(formOption);
+
+        tModal.appendEle(tForm);
+        return false;
+    });
+
+    function editNodeNameCommit(e, oModal) {
+        let oVal = oModal.getValues();
+
+        var data = {
+            id: treeNode.objectId,
+            name: oVal.editNodeName
+        };
+        requestAjax('post', 'http://rap2api.taobao.org/app/mock/241077/updateSysOrModuleName', 'false', JSON.stringify(data), 'json', function (res) {
+            alert(res.description);
+            if (res.code === 200) {
+                //隐藏模态框
+                oModal.hide();
+
+                //更新节点
+                var treeObj = $.fn.zTree.getZTreeObj("boObjTree");
+                //根据节点数据的属性搜索
+                var nodes = treeObj.getNodesByParam("id", treeNode.id, null);
+                var node = nodes[0];
+                node.name = oVal.editNodeName;
+                treeObj.updateNode(node);
+            }
+        });
+    }
+}
+
+function addModuleCommit(e, oModal) {
+    let oVal = oModal.getValues();
+
+    var data = {
+        name: oVal.sysModule,
+        parentId: addModuleModal.treeNode.id
+    };
+    requestAjax('post', 'http://rap2api.taobao.org/app/mock/241077/addModule', 'false', JSON.stringify(data), 'json', function (res) {
+        alert(res.description);
+        if (res.code === 200) {
+            //隐藏模态框
+            oModal.hide();
+
+            //新增节点
+            var treeObj = $.fn.zTree.getZTreeObj("boObjTree");
+            var arr = [];
+            arr.push(res.data);
+            treeObj.addNodes(addModuleModal.treeNode, arr);
+        }
+    });
+}
+
+function removeHoverDom(treeId, treeNode) {
+    $("#addBtn_" + treeNode.tId).unbind().remove();
+    $("#addBtn_" + treeNode.tId + "2").unbind().remove();
+}
+
+var ztreeData = [];
+
+function ztreeFormat(data) {
+    $.each(data, function (index, ele) {
+        var node = {
+            id: ele.id,
+            pId: ele.parentId,
+            objectId: ele.objectId,
+            name: ele.name,
+            open: true
+        };
+        ztreeData.push(node);
+        var children = ele.children;
+        if (children != null && children.length > 0) {
+            ztreeFormat(children)
+        }
+    });
+    return ztreeData;
+}
+
+/**
+ * 新增系统
+ */
+function addSystem() {
+    addSystemModal.treeData = null;
+
+    //modal
+    var tModalConfigure = {
+        id: 'addSystem',
+        frameObj: $('#modal_department'),
+        title: '新增系统',
+        callbacks: {
+            onCommit: addSystemCommit
+        }
+    };
+    var tModal = new comModal();
+    tModal.init(tModalConfigure);
+
+    var formOption = {
+        formId: 'moduleForm',
+        initContent: [
+            {
+                itemId: "systemName",
+                label: {
+                    text: "系统名 "
+                },
+            }]
+    };
+    var tForm = new comForm();
+    tForm.init(formOption);
+
+    tModal.appendEle(tForm);
+}
+
+function addSystemCommit(e, oModal) {
+    let oVal = oModal.getValues();
+
+    var data = {
+        name: oVal.systemName,
+    };
+    requestAjax('post', 'http://rap2api.taobao.org/app/mock/241077/addSystem', 'false', JSON.stringify(data), 'json', function (res) {
+        alert(res.description);
+        if (res.code === 200) {
+            //隐藏模态框
+            oModal.hide();
+
+            //新增节点
+            var treeObj = $.fn.zTree.getZTreeObj("boObjTree");
+            var arr = [];
+            arr.push(res.data);
+            treeObj.addNodes(addSystemModal.treeNode, arr);
+        }
+    });
+}
+
+
+/**
+ * 预览Excel
+ */
+function previewExcel() {
+    requestAjax('post', 'aggregation/getTestCaseVoBySystem', false, JSON.stringify({
+        systemId: systemId,
+        moduleId: moduleId
+    }), 'json', function (res) {
+
+        var tModalConfigure = {
+            id: 'previewExcelModal',
+            frameObj: $('#modal_preview_excel'),
+            type: 'browse',
+            title: '预览生成用例Excel',
+            eles: {
+                tables: {
+                    "previewExcelTable": {
+                        defaultOptions: {
+                            tableID: "previewExcelTable"
+                        },
+                        btOptions: {
+                            showRefresh: false,
+                            showExport: false,
+                            showColumns: false,
+                            columns: [
+                                {
+                                    field: 'manageModule',
+                                    title: '所属模块'
+                                }, {
+                                    field: 'testCaseTitle',
+                                    title: '用例标题'
+                                },
+                                {
+                                    field: 'precondition',
+                                    title: '前置条件'
+                                }, {
+                                    field: 'stepList',
+                                    title: '步骤'
+                                }, {
+                                    field: 'expected',
+                                    title: '预期'
+                                }, {
+                                    field: 'priority',
+                                    title: '优先级'
+                                }, {
+                                    field: 'testCaseType',
+                                    title: '用例类型'
+                                }, {
+                                    field: 'applicableStage',
+                                    title: '适用阶段'
+                                }
+                            ],
+                            showPaginationSwitch: false,
+                            height: 650,
+                            pageNumber: 1,
+                            pageSize: 1000
+                        }
+                    }
+                }
+            }
+        };
+        var tModal = new comModal();
+        tModal.init(tModalConfigure);
+
+        tModal.eles.tables['previewExcelTable'].appendData(res.data);
+
+    });
+}
+
+/**
+ * 导出Excel
+ */
+function exportExcel() {
+    Common.postExcelFile({systemId: systemId, moduleId: moduleId}, "aggregation/generateTestCasesExcel");
+}

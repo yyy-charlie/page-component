@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pagemanage.pagecomponent.mapper.POSystemStructureTreeMapper">
+    <resultMap id="BaseResultMap" type="com.pagemanage.pagecomponent.tree.SystemStructureTree">
+        <id column="SystemStructureTreeId" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="object_class" property="objectClass" jdbcType="VARCHAR"/>
+        <result column="object_id" property="objectId" jdbcType="VARCHAR"/>
+        <result column="parent_id" property="parentId" jdbcType="BIGINT"/>
+    </resultMap>
+</mapper>

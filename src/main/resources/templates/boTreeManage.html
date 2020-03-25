@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>BO树结构管理</title>
+    <link href="/css/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/bootstrap-treeview/bootstrap-treeview.css" rel="stylesheet">
+    <link href="/css/bootstrap-ztree/bootstrapStyle.css" rel="stylesheet">
+    <link href="/css/bootstrap-table/bootstrap-table.css" rel="stylesheet">
+
+    <script src="/js/common/systemCommonQuote.js"></script>
+    <script src="/js/common/commFunction.js"></script>
+    <script src="/js/common/pluginLibrary.js"></script>
+
+</head>
+<body>
+<div class="container-fluid">
+
+    <div class="row" id="head-top-model">
+        <div class="col-xs-12 new-head" id="headMenu">
+            <nav class="navbar navbar-default" role="navigation" id="navbar">
+                <div class="container-fluid">
+                    <div>
+                        <!--向左对齐-->
+                        <ul class="nav navbar-nav navbar-left">
+                            <li class="navbar-text navbar-left" id="cloud-name"></li>
+                        </ul>
+                        <!--向右对齐-->
+                        <ul class="nav navbar-nav navbar-right" id="sysMenu" style="margin-right: 10px;margin-top:8px">
+                            <li class="dropdown">
+                                <select name="systemChoose" onchange="window.location=this.value;" id="selectManage"
+                                        class="form-control">
+                                    <option value="boTreeManage">BO树结构管理</option>
+                                    <option value="boObjManage">BO对象管理页面</option>
+                                    <option value="treeManage">配置树组件管理页面</option>
+                                    <option value="formManage">配置表单组件管理页面</option>
+                                </select>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row panelWrapper">
+
+        <div class="treePanelWrapper col-lg-3 col-md-3" id="typeManage">
+            <div class="panel panel-primary" id="typePanel">
+                <div class="panel-heading">系统BO树</div>
+                <button type="button" class="btn btn-primary"
+                        onclick="addBOTreeSystemBtn()" style="margin: 20px 20px 0;">
+                    新增系统
+                </button>
+                <button type="button" class="btn btn-primary" id="exportTreeConfig"
+                        onclick="exportTreeConfigBtn()" style="margin: 20px 20px 0;" disabled>
+                    导出树配置
+                </button>
+                <div class="scrollPanel panel-body">
+                    <div class="panel panel-primary" id="boTreePanel">
+                        <div class="panel-heading">树列表</div>
+                        <div class="scrollPanel panel-body" style="padding-left: 0;padding-bottom: 0">
+                            <div class="ztree" id="boTree" style="height: 640px;overflow: scroll;">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+
+
+        <div class="infoPanelWrapper col-lg-9 col-md-9" style="padding-left: 0">
+            <div class="panel panel-primary" style="height: 845px;">
+                <div class="panel-heading">BO树管理</div>
+                <div class="scrollPanel panel-body">
+
+                    <label for="treeStructurePreviewTree">树配置</label>
+                    <form style="margin-left: 20px" id="typeInfoFrom" name="queryCondition"
+                          class="d-inlineBlock conditionForm">
+                        <div class="form-group form-group-space">
+                            <label class="label-control">BO树名称：</label>
+                            <input type="text" class='form-control' id="viewBOTreeName">
+                        </div>
+                        <div class="form-group form-group-space">
+                            <label class="label-control">描述：</label>
+                            <input type="text" class='form-control' id="viewBOTreeDescription">
+                        </div>
+                        <div class="form-group form-group-space">
+                            <label class="label-control">是否允许名字重复：</label>
+                            <select name="viewIfNameRepeat" id="viewIfNameRepeat" class="form-control">
+                                <option value="">请选择</option>
+                                <option value="true">是</option>
+                                <option value="false">否</option>
+                            </select>
+                            <!--                            <input type="text" class='form-control' id="viewIfNameRepeat">-->
+                        </div>
+                    </form>
+
+                    <label for="treeStructurePreviewTree">树结构预览</label>
+                    <div>
+                        <div id="treeStructurePreviewTree" class="ztree"
+                             style="overflow: scroll;width: 500px;height: 300px;">
+                        </div>
+                    </div>
+
+                    <button type="button" style="float: left;margin-left: 545px;margin-top: 30px;"
+                            class="btn btn-primary"
+                            onclick="updateBoTreeStructure()">
+                        提交
+                    </button>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--模态框-->
+<div class="modal fade" id="modal_department" tabindex="-1" role="dialog">
+</div>
+
+
+<div class="modal fade" id="addBOTreeModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document" id="addUser-userManage">
+        <div class="modal-content" style="max-height: 850px; overflow-y: scroll;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="close"><span>×</span></button>
+                <h4 class="modal-title" id="modal-title">添加BO树</h4>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <div id="contentWrapper" style="margin-top: 3%;margin-left: 5%;width: 48%;display: inline-block;">
+                    <div class="form-group form-inline inputWrapper">
+                        <label class="label-control" for="boTreeName">BO树名称<span
+                                style="color:red;font-size:18px;vertical-align: middle;">&nbsp;*</span></label>
+                        <input class="form-control" type="text" id="boTreeName">
+                    </div>
+                    <div class="form-group form-inline inputWrapper">
+                        <label class="label-control" for="boTreeDescription">描述<span
+                                style="color:red;font-size:18px;vertical-align: middle;">&nbsp;*</span></label>
+                        <input class="form-control" id="boTreeDescription">
+                    </div>
+                    <div class="form-group form-inline inputWrapper">
+                        <label class="label-control" for="ifNameRepeat">是否允许名字重复<span
+                                style="color:red;font-size:18px;vertical-align: middle;">&nbsp;*</span></label>
+                        <select class="form-control" name="ifNameRepeat" id="ifNameRepeat">
+                            <option value="true">是</option>
+                            <option value="false">否</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="position: absolute;top: 40px;left: 480px; font-weight: 600;font-size: 18px">BO对象选择</div>
+                <div id="boObjectTree" class="ztree"
+                     style="height: 380px;overflow:scroll;width: 40%;display: inline-block;margin-top: 7%;vertical-align: top;">
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    取消
+                </button>
+                <button type="button" class="btn btn-primary" onclick="addBOTreeCommit()">
+                    提交
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+
+<script src="/js/treeComponentCommon.js"></script>
+<script src="/js/boManage/boTreeBizManage.js"></script>
+<script src="/js/boManage/boTreeManage.js"></script>
+
+</html>

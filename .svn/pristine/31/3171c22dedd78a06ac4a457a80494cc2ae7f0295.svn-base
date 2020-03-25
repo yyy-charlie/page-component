@@ -1,0 +1,257 @@
+package com.treemanage.treecomponent.export.impl;
+
+import com.container.treecontainer.util.ObjectUtils;
+import com.sun.codemodel.JDefinedClass;
+import com.treemanage.treecomponent.bo.AttrStructureInfo;
+import com.treemanage.treecomponent.bo.BeanStructureInfo;
+import com.treemanage.treecomponent.enump.GeneratedValueType;
+import com.treemanage.treecomponent.enump.JavaType;
+import com.treemanage.treecomponent.export.intf.InportExportBean;
+import com.treemanage.treecomponent.mapper.POBeanStructureInfoMapper;
+import com.treemanage.treecomponent.pojo.POBeanStructureInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @Author: Mist
+ * @Version: 1.0
+ * @Date: 2020/1/4 11:45
+ */
+@Service
+public class InportExportBeanImpl implements InportExportBean {
+
+    @Autowired
+    private POBeanStructureInfoMapper poBeanStructureInfoMapper;
+
+    @Override
+    public BeanStructureInfo inportBeanStructureInfo(MultipartFile file) {
+
+        BeanStructureInfo beanStructureInfo = analysisBeanStructureInfo(file);
+
+        return beanStructureInfo;
+    }
+
+    @Override
+    public String exportBeanStructureInfo(BeanStructureInfo beanStructureInfo) {
+
+        StringBuffer stringBuffer = getBeanString(beanStructureInfo);
+
+        return stringBuffer.toString();
+    }
+
+    private StringBuffer getBeanString(BeanStructureInfo beanStructureInfo) {
+        StringBuffer stringBuffer = new StringBuffer();
+
+        setPackage(stringBuffer,beanStructureInfo);
+
+        setInport(stringBuffer,beanStructureInfo);
+
+        setAnnotationData(stringBuffer,beanStructureInfo);
+
+        setClass(stringBuffer,beanStructureInfo);
+
+        setAttr(stringBuffer,beanStructureInfo);
+
+        stringBuffer.append("\n}");
+
+        return stringBuffer;
+    }
+
+    private void setPackage(StringBuffer stringBuffer, BeanStructureInfo beanStructureInfo) {
+        stringBuffer.append("package "+beanStructureInfo.getBeanPackage()+";\n\n\n");
+    }
+    private void setInport(StringBuffer stringBuffer, BeanStructureInfo beanStructureInfo) {
+
+        Map<String,String> importMap = new HashMap<>();
+
+        for (AttrStructureInfo one:beanStructureInfo.getAttributes()) {
+
+            if(!ObjectUtils.isNull(one.getIfId()) && one.getIfId())
+                setOneImport(importMap,stringBuffer,"@Id","import javax.persistence.Id;\n");
+
+            if(!ObjectUtils.isNull(one.getIfList()) && one.getIfList())
+                setOneImport(importMap,stringBuffer,"@List","import java.util.List;\n");
+
+            if(!ObjectUtils.isNull(one.getIfForeignKey()) && one.getIfForeignKey())setOneImport(importMap,stringBuffer,"@ForeignKey","import com.bocontainer.annotaion.ForeignKey;\n");
+
+            if(!ObjectUtils.isNull(one.getIfIgnoreParam()) && one.getIfIgnoreParam())setOneImport(importMap,stringBuffer,"@IgnoreParam","import com.bocontainer.annotaion.IgnoreParam;\n");
+
+            if(one.getJavaType() == GeneratedValueType.AUTO.getCode()){
+                setOneImport(importMap,stringBuffer,"@GeneratedValue","import javax.persistence.GeneratedValue;\n");
+                setOneImport(importMap,stringBuffer,"GenerationType","import javax.persistence.GenerationType;\n");
+            }
+
+            if(one.getJavaType() == JavaType.OBJECT.getCode()){
+
+                POBeanStructureInfo po = poBeanStructureInfoMapper.selectByPrimaryKey(one.getBeanTypeId());
+                if(!ObjectUtils.isNull(po)) setOneImport(importMap,stringBuffer,po.getBeanName(),"import "+po.getBeanClassName()+";\n");
+
+            }
+
+        }
+
+    }
+
+    private void setOneImport(Map<String,String> importMap, StringBuffer stringBuffer, String key, String value) {
+
+        if(!importMap.containsKey(key)){
+            importMap.put(key,value);
+            stringBuffer.append(value);
+        }
+    }
+
+    private void setAnnotationData(StringBuffer stringBuffer, BeanStructureInfo beanStructureInfo) {
+        stringBuffer.append("\n\n@Data\n");
+    }
+    private void setClass(StringBuffer stringBuffer, BeanStructureInfo beanStructureInfo) {
+        stringBuffer.append("public class "+beanStructureInfo.getBeanName()+" {\n");
+    }
+    private void setAttr(StringBuffer stringBuffer, BeanStructureInfo beanStructureInfo) {
+
+        for (AttrStructureInfo one:beanStructureInfo.getAttributes()) {
+            stringBuffer.append("\tprivate "+getJaveType(one)+" "+one.getName()+";\t//"+one.getDescription()+"\n");
+        }
+    }
+
+    private String getJaveType(AttrStructureInfo one) {
+        return one.getIfList()?"List<"+getOneJavaType(one)+">":getOneJavaType(one);
+    }
+
+    private String getOneJavaType(AttrStructureInfo one) {
+        if(one.getJavaType() == JavaType.OBJECT.getCode()){
+            POBeanStructureInfo po = poBeanStructureInfoMapper.selectByPrimaryKey(one.getBeanTypeId());
+            if(!ObjectUtils.isNull(po)) return po.getBeanName();
+        }
+        JavaType javaType =  JavaType.getEnum(one.getJavaType());
+        if(!ObjectUtils.isNull(javaType)) return javaType.getValue();
+
+        return null;
+    }
+
+    /*-----------------------------------------------------------------------------------------------------------------*/
+
+
+    private BeanStructureInfo analysisBeanStructureInfo(MultipartFile file) {
+        BeanStructureInfo beanStructureInfo = new BeanStructureInfo();
+
+        setBeanName(beanStructureInfo,file);
+
+        InputStream is = null;
+        BufferedReader bufferedReader = null;
+        try {
+            is = file.getInputStream();
+
+            bufferedReader = new BufferedReader(new InputStreamReader(is));
+
+            String str = null;
+            List<AttrStructureInfo> attrStructureInfos = new ArrayList<>();
+            while((str = bufferedReader.readLine()) != null)
+            {
+                setBeanClassName(str,beanStructureInfo);
+                AttrStructureInfo tempAttr = getAttrStructureInfo(str);
+
+                if(!ObjectUtils.isNull(tempAttr))  attrStructureInfos.add(tempAttr);
+            }
+
+            if(ObjectUtils.judgeList(attrStructureInfos)) beanStructureInfo.setAttributes(attrStructureInfos);
+
+            return beanStructureInfo;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                is.close();
+                bufferedReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    private void setBeanClassName(String str, BeanStructureInfo beanStructureInfo) {
+        if(str.trim().matches("package.*"))
+            beanStructureInfo.setBeanClassName(str.split("[ ]")[1].split("[;]")[0]+"."+beanStructureInfo.getBeanName());
+
+    }
+
+    private AttrStructureInfo getAttrStructureInfo(String str) {
+
+        AttrStructureInfo attrStructureInfo = new AttrStructureInfo();
+
+        str = str.trim();
+
+        if(str.trim().matches("private.*")){
+
+            String[] strings = str.split("[ ]");
+
+            setJavaType(strings[1],attrStructureInfo);
+
+            setIfList(strings[1],attrStructureInfo);
+
+            attrStructureInfo.setName(strings[2].split("[;]")[0]);
+
+            setDescription(strings[2],attrStructureInfo);
+
+            return attrStructureInfo;
+        }
+        return null;
+    }
+
+
+
+    private void setJavaType(String string, AttrStructureInfo attrStructureInfo) {
+
+        String javaTypeValue = getListJavaType(string);
+
+        JavaType javaType = JavaType.getEnum(javaTypeValue);
+
+        if(ObjectUtils.isNull(javaType)){
+            attrStructureInfo.setBeanTypeName(javaTypeValue);
+            attrStructureInfo.setJavaType(JavaType.OBJECT.getCode());
+        }else {
+            attrStructureInfo.setJavaType(javaType.getCode());
+        }
+
+    }
+
+    private void setIfList(String string, AttrStructureInfo attrStructureInfo) {
+        attrStructureInfo.setIfList(string.trim().matches("List<.*>"));
+    }
+
+    private String getListJavaType(String string) {
+
+        if(string.trim().matches("List<.*>")){
+            string = string.substring(5);
+            return string.substring(0,string.length() -1);
+
+        }
+        return string;
+    }
+
+    private void setAttrName(String string, AttrStructureInfo attrStructureInfo) {
+        attrStructureInfo.setName(string);
+    }
+
+    private void setDescription(String string, AttrStructureInfo attrStructureInfo) {
+        String[] strings = string.split("//");
+        if(strings.length > 1) attrStructureInfo.setDescription(strings[1]);
+    }
+
+
+    private void setBeanName(BeanStructureInfo beanStructureInfo, MultipartFile file) {
+        String className = file.getName().split("[.]")[0];
+        beanStructureInfo.setBeanName(className);
+    }
+
+
+
+}

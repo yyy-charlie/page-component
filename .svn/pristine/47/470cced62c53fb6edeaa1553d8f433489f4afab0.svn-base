@@ -1,0 +1,27 @@
+package com.treemanage.treecomponent.enump;
+
+/**
+ * @Author: Mist
+ * @Version: 1.0
+ * @Date: 2019/12/29 10:48
+ */
+public class GeneratedValueType {
+
+    ;
+
+    private int Code;
+    private String value;
+
+    GeneratedValueType(int code, String value) {
+        Code = code;
+        this.value = value;
+    }
+
+    public int getCode() {
+        return Code;
+    }
+
+    public String getValue() {
+        return value;
+    }
+}

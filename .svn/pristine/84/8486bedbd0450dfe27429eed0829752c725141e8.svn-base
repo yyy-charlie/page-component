@@ -1,0 +1,291 @@
+package com.treemanage.treecomponent.controller;
+
+import com.container.treecontainer.bo.TreeNode;
+import com.container.treecontainer.exception.TreeContainerException;
+import com.container.treecontainer.util.ObjectUtils;
+import com.treemanage.treecomponent.biz.intf.BeanStructureBiz;
+import com.treemanage.treecomponent.bo.BeanStructureInfo;
+import com.treemanage.treecomponent.exception.BaseException;
+import com.treemanage.treecomponent.msg.BaseResponse;
+import com.treemanage.treecomponent.parse.ParseViewAndBeanModule;
+import com.treemanage.treecomponent.util.ParseUtils;
+import com.treemanage.treecomponent.vo.VOBeanStructureInfo;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.InputStream;
+import java.util.List;
+
+
+/**
+ * @author Mist
+ * @version 1.0
+ * @created 27-12-2019 17:55:40
+ */
+@RestController
+@ResponseBody
+@RequestMapping("/BeanStructure")
+public class BeanStructurePageController {
+
+	private static final Logger logger = LogManager.getLogger();
+
+	@Autowired
+	private BeanStructureBiz beanStructureBiz;
+
+	@Autowired
+	private ParseViewAndBeanModule parseViewAndBeanModule;
+
+	/**
+	 * 新增系统
+	 *
+	 * @param treeNode
+	 */
+	@RequestMapping("/addSystem")
+	public BaseResponse addSystem(@RequestBody TreeNode treeNode){
+
+		String description = "新增系统";
+
+		TreeNode result = null;
+		try {
+			result = beanStructureBiz.addNode(treeNode);
+		} catch (Exception e) {
+			description = judgeTreeContainerException(e,description,"新增系统名称重复");
+		}
+
+		return parseReturn(result,description);
+	}
+
+
+
+	/**
+	 * 删除系统
+	 *
+	 * @param nodeId
+	 */
+	@RequestMapping("/deleteSystem")
+	public BaseResponse deleteSystem(@RequestParam Long nodeId){
+
+		String description = "删除系统";
+
+		boolean result = false;
+
+		try {
+			result = beanStructureBiz.deleteNode(nodeId);
+		} catch (Exception e) {
+			description = judgeBaseException(e,description);
+		}
+
+		return parseReturn(result,description);
+	}
+
+
+
+	/**
+	 * 更新系统
+	 *
+	 * @param treeNode
+	 */
+	@RequestMapping("/updateSystem")
+	public BaseResponse updateSystem(@RequestBody TreeNode treeNode){
+
+		String description = "更新系统";
+
+		TreeNode result = null;
+		try {
+			result = beanStructureBiz.updateNode(treeNode);
+		} catch (Exception e) {
+			description = judgeTreeContainerException(e,description,"更新系统名称重复");
+		}
+
+		return parseReturn(result,description);
+	}
+
+	/**
+	 * 新增模块
+	 *
+	 * @param treeNode
+	 */
+	@RequestMapping("/addModule")
+	public BaseResponse addModule(@RequestBody TreeNode treeNode){
+
+		String description = "新增模块";
+
+		TreeNode result = null;
+		try {
+			result = beanStructureBiz.addNode(treeNode);
+		} catch (Exception e) {
+		description = judgeTreeContainerException(e,description,"新增模块名称重复");
+		}
+
+		return parseReturn(result,description);
+	}
+
+
+
+	/**
+	 * 删除模块
+	 *
+	 * @param nodeId
+	 */
+	@RequestMapping("/deleteModule")
+	public BaseResponse deleteModule(@RequestParam Long nodeId){
+
+		String description = "删除模块";
+
+		boolean result = false;
+		try {
+			result = beanStructureBiz.deleteNode(nodeId);
+		} catch (Exception e) {
+			description = judgeBaseException(e,description);
+		}
+
+		return parseReturn(result,description);
+	}
+
+	/**
+	 * 更新模块
+	 *
+	 * @param treeNode
+	 */
+	@RequestMapping("/updateModule")
+	public BaseResponse updateModule(@RequestBody TreeNode treeNode){
+
+		String description = "更新模块";
+
+		TreeNode result = null;
+		try {
+			result = beanStructureBiz.updateNode(treeNode);
+		} catch (Exception e) {
+			description = judgeTreeContainerException(e,description,"更新模块名称重复");
+		}
+
+		return parseReturn(result,description);
+	}
+
+
+	/**
+	 * 获得BO结构对象信息
+	 *
+	 * @param nodeId
+	 */
+	@RequestMapping("/getBeanStructureInfo")
+	public BaseResponse getBeanStructureInfo(@RequestParam Long nodeId){
+		String description = "获得BO结构对象信息";
+
+		BeanStructureInfo beanStructureInfo = beanStructureBiz.getBeanStructureInfo(nodeId);
+
+		VOBeanStructureInfo result = parseViewAndBeanModule.parseBO2VO(beanStructureInfo);
+
+		return parseReturn(result,description);
+	}
+
+	/**
+	 * 修改BO结构对象信息
+	 *
+	 * @param beanStructureInfo
+	 */
+	@RequestMapping("/updateBeanStructureInfo")
+	public BaseResponse updateBeanStructureInfo(@RequestBody VOBeanStructureInfo beanStructureInfo){
+		String description = "修改BO结构对象信息";
+
+
+		VOBeanStructureInfo result = null;
+		try {
+
+			BeanStructureInfo bean = parseViewAndBeanModule.parseVO2BO(beanStructureInfo);
+			bean = beanStructureBiz.updateBeanStructureInfo(bean);
+			result = parseViewAndBeanModule.parseBO2VO(bean);
+
+		} catch (Exception e) {
+			description = judgeBaseException(e,description);
+		}
+
+		return parseReturn(result,description);
+	}
+
+	/**
+	 * 展示 节点的子孙节点
+	 *
+	 * @param parentNodeId
+	 */
+	@RequestMapping("/getDescendantsView")
+	public BaseResponse getDescendantsView(Long parentNodeId){
+
+		String description = "展示节点的子孙节点";
+
+		List<TreeNode> treeNodes = beanStructureBiz.getDescendantsView(parentNodeId);
+
+		List<TreeNode> result = parseViewAndBeanModule.parseBO2VO(treeNodes);
+
+		return parseReturn(result,description);
+	}
+
+	/**
+	 * 展示 树
+	 *
+	 */
+	@RequestMapping("/getTreeView")
+	public BaseResponse getTreeView(){
+		String description = "展示树";
+
+		List<TreeNode> treeNodes = beanStructureBiz.getTreeView();
+
+		List<TreeNode> result = parseViewAndBeanModule.parseBO2VO(treeNodes);
+
+		return parseReturn(result,description);
+	}
+
+	/**
+	 * 导入BO对象
+	 * @param parentNodeId
+	 * @param is
+	 */
+	@RequestMapping("/inportBeanStructureInfo")
+	public BaseResponse inportBeanStructureInfo(Long parentNodeId, InputStream is){
+		return null;
+	}
+
+	/**
+	 * 导出BO对象
+	 *
+	 * @param nodeId
+	 * @param url
+	 */
+	@RequestMapping("/exportBeanStructureInfo")
+	public BaseResponse exportBeanStructureInfo(Long nodeId, String url){
+		return null;
+	}
+
+
+
+
+	/*------------------------------------------------------------------------------------------------------------------*/
+
+	private String judgeTreeContainerException(Exception e, String description, String newDescription) {
+		if(e instanceof TreeContainerException){
+			return newDescription;
+		}
+		return description;
+	}
+
+	private String judgeBaseException(Exception e, String description) {
+		return e instanceof BaseException? e.getMessage():description;
+	}
+
+
+
+
+	private BaseResponse parseReturn(Object result, String description) {
+		return !ObjectUtils.isNull(result)?ParseUtils.parse2Response(HttpStatus.OK, description + "，成功", result):
+				ParseUtils.parse2Response(HttpStatus.INTERNAL_SERVER_ERROR, description + "，失败", result);
+	}
+
+
+	private BaseResponse parseReturn(boolean result, String description) {
+		return result?ParseUtils.parse2Response(HttpStatus.OK, description + "，成功"):
+				ParseUtils.parse2Response(HttpStatus.INTERNAL_SERVER_ERROR, description + "，失败");
+	}
+}
