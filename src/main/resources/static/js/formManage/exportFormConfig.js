@@ -21,8 +21,8 @@ function exportConfig() {
 function exportFormConfig() {
     //获取初始化content
     let contentArr = getInitContent();
-    //通过全局变量存放导出内容
-    saveExportContent(contentArr);
+    //通过全局变量存放js导出内容
+    saveJsExportContent(contentArr);
     //下载文件
     downloadFile("formConfig.js", exportJsConfigContent); //fileContent is string
 }
@@ -34,7 +34,7 @@ function exportJavaConfig() {
     getJavaConfigContent();
     //下载文件
     let objName = $("#objName").val();
-    downloadFile(objName + "Controller.js", exportJavaConfigContent); //fileContent is string
+    downloadFile(objName + "Controller.java", exportJavaConfigContent); //fileContent is string
 }
 
 /**
@@ -67,7 +67,7 @@ function getInitContent() {
  * 通过全局变量存放导出内容
  * @param contentArr
  */
-function saveExportContent(contentArr) {
+function saveJsExportContent(contentArr) {
     let type = $("#type").val();
     //block为默认值，默认值缺省，不为默认值则加入到配置
     if (type == 'block') {
@@ -137,7 +137,7 @@ function getJavaConfigContent() {
     public class ` + objNameHump + `Controller {
         
         @RequestMapping("/` + addFormUrl + `")
-        public BaseResponse add` + objName + `@RequestBody ` + objName + ` ` + objNameHump + `) {
+        public BaseResponse add` + objName + `(@RequestBody ` + objName + ` ` + objNameHump + `) {
         
             return null;
         }
@@ -158,13 +158,5 @@ function getJavaConfigContent() {
 }
 
 
-/**
- * 将第一个字符换成小写
- * @param str
- */
-function replaceFirstStrWithLowerCase(str) {
-    let firstStr = str.substring(0, 1).toLowerCase();
-    str = str.substring(1);
-    return firstStr + str;
-}
+
 

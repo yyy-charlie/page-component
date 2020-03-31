@@ -387,6 +387,15 @@ function requestZtreeAjax() {
             }`
 }
 
+function exportConfig() {
+    //导出ztree树配置
+    exportTreeConfig();
+
+    //导出Java配置
+    exportJavaConfig();
+
+}
+
 function exportTreeConfig() {
     ztreeId = $("#ztreeId").val();
     fileContent = "var " + ztreeId + " = " + "$('#" + ztreeId + "');\n";
@@ -418,3 +427,51 @@ function exportTreeConfig() {
     downloadFile("ztreeConfig.js", fileContent); //fileContent is string
 }
 
+
+var exportJavaConfigContent = "";
+
+function exportJavaConfig() {
+    let objName = $("#objName").val();
+    let objNameHump = replaceFirstStrWithLowerCase(objName);
+    let treeUrl = $("#treeUrl").val();
+    let addNodeUrl = $("#addNodeUrl").val();
+    let editNodeUrl = $("#editNodeUrl").val();
+    let deleteNodeUrl = $("#deleteNodeUrl").val();
+
+    exportJavaConfigContent += `
+    import com.hdstcloud.security.common.msg.BaseResponse;
+    
+    @RestController
+    @ResponseBody
+    @RequestMapping("` + objNameHump + `")
+    public class ` + objNameHump + `Controller {
+        
+        @RequestMapping("/` + treeUrl + `")
+        public BaseResponse getTree() {
+        
+            return null;
+        }
+        
+        @RequestMapping("/` + addNodeUrl + `")
+        public BaseResponse addNode(@RequestBody ` + objName + ` ` + objNameHump + `) {
+        
+            return null;
+        }
+        
+        @RequestMapping("/` + editNodeUrl + `")
+        public BaseResponse updateNode(@RequestBody ` + objName + ` ` + objNameHump + `) {
+        
+            return null;
+        }
+        
+        @RequestMapping("/` + deleteNodeUrl + `")
+        public BaseResponse deleteNode(@RequestBody ` + objName + ` ` + objNameHump + `) {
+        
+            return null;
+        }
+    }
+    `;
+
+    //下载文件
+    downloadFile(objName + "Controller.java", exportJavaConfigContent); //fileContent is string
+}

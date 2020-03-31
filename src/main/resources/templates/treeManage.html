@@ -59,6 +59,7 @@
                                         class="form-control">
                                     <option value="treeManage">配置树组件管理页面</option>
                                     <option value="formManage">配置表单组件管理页面</option>
+                                    <option value="tableManage">配置表格组件管理页面</option>
                                     <option value="boObjManage">BO对象管理页面</option>
                                     <option value="boTreeManage">BO树结构管理</option>
                                 </select>
@@ -77,19 +78,20 @@
                 <div class="panel-heading">页面树配置</div>
                 <div class="panel-body">
                     <div style="width: 1200px;margin: auto;">
-                        <form class="form-inline" data-bv-message="This value is not valid"
-                              data-bv-feedbackicons-valid="glyphicon glyphicon-ok"
-                              data-bv-feedbackicons-invalid="glyphicon glyphicon-remove"
-                              data-bv-feedbackicons-validating="glyphicon glyphicon-refresh">
-                            <div class="form-group">
-                                <label class="label-control" for="ztreeId">ztreeId：</label>
-                                <input type="text" value="testTree" class='form-control' id="ztreeId" required>
 
-                                <label class="label-control" for="treeUrl">获取数据的url：</label>
-                                <input type="text" value="http://rap2api.taobao.org/app/mock/241077/getTreeView1"
-                                       class='form-control' id="treeUrl" required>
-                            </div>
-                        </form>
+                        <div class="form-inline">
+                            <label class="label-control" for="ztreeId">对象名：</label>
+                            <input type="text" value="MaterialTypeVo" class='form-control' id="objName" required>
+                        </div>
+
+                        <div class="form-inline">
+                            <label class="label-control" for="ztreeId">ztreeId：</label>
+                            <input type="text" value="testTree" class='form-control' id="ztreeId" required>
+
+                            <label class="label-control" for="treeUrl">获取数据的url：</label>
+                            <input type="text" value="http://rap2api.taobao.org/app/mock/241077/getTreeView1"
+                                   class='form-control' id="treeUrl" required>
+                        </div>
 
                         <form class="form-inline">
                             <div class="form-group">
@@ -256,7 +258,7 @@
 
                         <div class="form-group form-inline">
                             <button type="button" style="float:right;" class="btn btn-primary"
-                                    onclick="exportTreeConfig()">
+                                    onclick="exportConfig()">
                                 导出配置
                             </button>
                         </div>
@@ -274,7 +276,7 @@
 
 </body>
 
-<script src="/js/treeComponentCommon.js"></script>
+<script src="/js/componentCommon.js"></script>
 <script src="/js/voManage/voManage.js"></script>
 <script src="/js/voManage/voManageBiz.js"></script>
 

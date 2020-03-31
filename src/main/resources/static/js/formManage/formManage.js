@@ -173,25 +173,32 @@ function getItemColumns() {
     return [
         {
             field: 'itemId',
-            title: 'itemId'
+            title: 'itemId',
+            align: "center"
         }, {
             field: 'label',
-            title: 'label'
+            title: 'label',
+            align: "center"
         }, {
             field: 'display',
-            title: 'display'
+            title: 'display',
+            align: "center"
         }, {
             field: 'readonly',
-            title: 'readonly'
+            title: 'readonly',
+            align: "center"
         }, {
             field: 'enable',
-            title: 'enable'
+            title: 'enable',
+            align: "center"
         }, {
             field: 'required',
-            title: 'required'
+            title: 'required',
+            align: "center"
         }, {
             field: 'validType',
-            title: 'validType'
+            title: 'validType',
+            align: "center"
         }
     ]
 }

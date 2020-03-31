@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>vo管理</title>
+    <title>表单管理</title>
     <link href="/css/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="/css/bootstrap-treeview/bootstrap-treeview.css" rel="stylesheet">
     <link href="/css/bootstrap-ztree/bootstrapStyle.css" rel="stylesheet">
@@ -28,6 +28,11 @@
     <script src="/js/bootstrap-editable/bootstrap-table-editable.js"></script>
     <script src="/js/bootstrap-editable/bootstrap-editable.min.js"></script>
 
+    <style>
+        .form-group{
+            margin-right: 15px;
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid">
@@ -47,6 +52,7 @@
                                 <select name="systemChoose" onchange="window.location=this.value;" id="selectManage"
                                         class="form-control">
                                     <option value="formManage">配置表单组件管理页面</option>
+                                    <option value="tableManage">配置表格组件管理页面</option>
                                     <option value="treeManage">配置树组件管理页面</option>
                                     <option value="boObjManage">BO对象管理页面</option>
                                     <option value="boTreeManage">BO树结构管理</option>
@@ -74,7 +80,6 @@
                         </div>
 
 
-                        <form class="form-group form-inline">
                             <div class="form-group">
                                 <label class="label-control">对象名称：</label>
                                 <input type="text" id="objName" class='form-control' readonly>
@@ -119,7 +124,6 @@
                                 </div>
                             </div>
 
-                        </form>
 
 
                         <div class="form-group form-inline">
@@ -173,7 +177,7 @@
 </div>
 </body>
 
-<script src="/js/treeComponentCommon.js"></script>
+<script src="/js/componentCommon.js"></script>
 <script src="/js/formManage/formManage.js"></script>
 <script src="/js/formManage/exportFormConfig.js"></script>
 
