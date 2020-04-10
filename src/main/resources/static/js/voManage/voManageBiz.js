@@ -59,29 +59,32 @@ function getTreeSetting() {
         treeSettingObj.edit.removeTitle = JSON.stringify(removeTitle);
     }
 
-    fileContent += "{";
-    Object.keys(treeSettingObj).forEach(function (key) {
-        var attr = treeSettingObj[key];
-        if (typeof (attr) == "object") {
-            fileContent += key + ":{";
-            Object.keys(attr).forEach(function (key2) {
-                var attr2 = attr[key2];
-                if (typeof (attr2) == "object") {
-                    fileContent += key2 + ":{";
-                    Object.keys(attr2).forEach(function (key3) {
-                        fileContent += key3 + ":" + attr2[key3] + ",";
-                    });
-                    fileContent += "},\n";
-                } else {
-                    fileContent += key2 + ":" + attr[key2] + ",";
-                }
-            });
-            fileContent += "},\n";
-        } else {
-            fileContent += key + ":" + treeSettingObj[key];
-        }
-    });
-    fileContent += "};\n";
+    let treeSettingAttrNum = Object.keys(treeSettingObj).length;
+    fileContent += iterateObj(treeSettingObj, fileContent, treeSettingAttrNum);
+
+    // fileContent += "{";
+    // Object.keys(treeSettingObj).forEach(function (key) {
+    //     var attr = treeSettingObj[key];
+    //     if (typeof (attr) == "object") {
+    //         fileContent += key + ":{";
+    //         Object.keys(attr).forEach(function (key2) {
+    //             var attr2 = attr[key2];
+    //             if (typeof (attr2) == "object") {
+    //                 fileContent += key2 + ":{";
+    //                 Object.keys(attr2).forEach(function (key3) {
+    //                     fileContent += key3 + ":" + attr2[key3] + ",";
+    //                 });
+    //                 fileContent += "},\n";
+    //             } else {
+    //                 fileContent += key2 + ":" + attr[key2] + ",";
+    //             }
+    //         });
+    //         fileContent += "},\n";
+    //     } else {
+    //         fileContent += key + ":" + treeSettingObj[key];
+    //     }
+    // });
+    // fileContent += "};\n";
 }
 
 var addHoverDomObj = {};
@@ -425,6 +428,7 @@ function exportTreeConfig() {
     }
 
     downloadFile("ztreeConfig.js", fileContent); //fileContent is string
+    fileContent = "";
 }
 
 
@@ -474,4 +478,5 @@ function exportJavaConfig() {
 
     //下载文件
     downloadFile(objName + "Controller.java", exportJavaConfigContent); //fileContent is string
+    exportJavaConfigContent = "";
 }

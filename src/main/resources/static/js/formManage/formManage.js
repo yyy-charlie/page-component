@@ -30,8 +30,6 @@ function initUploadFile(ctrlName, uploadUrl, param) {
         control.fileinput({
             language: "zh",//设置语言
             uploadUrl: uploadUrl,//上传的地址
-            // uploadExtraData: param, //上传的时候，增加的附加参数
-            // maxFilesNum: 10,//上传最大的文件数量
             uploadAsync: true, //默认异步上传
             showUpload: false, //是否显示上传按钮
             showRemove: false, //显示移除按钮
@@ -72,6 +70,7 @@ function fileUploaded(ctrlName) {
             $.each(attrs, function (index, item) {
                 rowData.push({
                     itemId: item.name,
+                    label: null,
                     display: "block",
                     readonly: false,
                     enable: true,
@@ -81,9 +80,7 @@ function fileUploaded(ctrlName) {
             })
         }
 
-        $("#itemTable").bootstrapTable('refreshOptions', {
-            data: rowData,
-        });
+        $("#itemTable").bootstrapTable('append', rowData);
     });
 }
 
@@ -114,7 +111,7 @@ function addItemBtn(e, value, row, index) {
 
     function commitAddItem(e, modal) {
         let val = modal.getValues();
-        itemTable.rawTable.bootstrapTable('insertRow', {
+        itemTable.rawTable.bootstrapTable('insertRow', {//字符串
             index: 0,
             row: val
         });
@@ -133,14 +130,9 @@ function initItemTable() {
             orderNumber: false,
             checkbox: false,
             isNeedOperate: true,                                           //操作列
-            // isNeedDetails: true,                                           //详情列
             otherOperationArr: ['updateItem', 'removeItem'],
-            // otherDetailsArr: ['delDetails'],
             operate: `<button type="button" class="updateItem btn-primary btn-xs">&nbsp;修改&nbsp;</button>&nbsp;&nbsp; 
                        <button type="button" class="removeItem btn-primary btn-xs">&nbsp;删除&nbsp;</button>&nbsp;&nbsp; `,
-            // details: function (value, row, index) {
-            //     return addDetailsBtn(value, row, index);
-            // },
             updateItem: function (e, value, row, index) {                    //注册的点击事件多一个event参数
                 updateItem(e, value, row, index);
             },
@@ -155,15 +147,9 @@ function initItemTable() {
             height: panelHeight * 0.65,
             columns: getItemColumns(),
             pageNumber: 1,
-            uniqueId: 'no',
             pageSize: [10000],
-            queryParamsType: '',
             responseHandler: function (data) {
                 return data.data;
-            },
-            onClickRow: function (row, $el, field) {
-                $('#itemTable .success').removeClass('success');
-                $el.addClass('success');
             }
         }
     );
@@ -174,31 +160,72 @@ function getItemColumns() {
         {
             field: 'itemId',
             title: 'itemId',
-            align: "center"
+            align: "center",
+            width: '138px',
+            editable: {
+                type: 'text',
+                validate: function (v) {
+                    if (!v) return '不能为空';
+                }
+            }
         }, {
             field: 'label',
             title: 'label',
-            align: "center"
+            align: "center",
+            width: '166px',
+            editable: {
+                type: 'text',
+                validate: function (v) {
+                    if (!v) return '不能为空';
+                }
+            }
         }, {
             field: 'display',
             title: 'display',
-            align: "center"
+            align: "center",
+            width: '123px',
+            editable: {
+                type: 'select',
+                source: [{value: "block", text: "block"}, {value: "inline", text: "inline"}]
+            }
         }, {
             field: 'readonly',
             title: 'readonly',
-            align: "center"
+            align: "center",
+            width: '122px',
+            editable: {
+                type: 'select',
+                source: [{value: "'false'", text: "false"}, {value: "'true'", text: "true"}]
+            }
         }, {
             field: 'enable',
             title: 'enable',
-            align: "center"
+            align: "center",
+            width: '116px',
+            editable: {
+                type: 'select',
+                source: [{value: "'true'", text: "true"}, {value: "'false'", text: "false"}]
+            }
         }, {
             field: 'required',
             title: 'required',
-            align: "center"
+            align: "center",
+            width: '129px',
+            editable: {
+                type: 'select',
+                source: [{value: "'true'", text: "true"}, {value: "'false'", text: "false"}]
+            }
         }, {
             field: 'validType',
             title: 'validType',
-            align: "center"
+            align: "center",
+            width: '152px',
+            editable: {
+                type: 'text',
+                validate: function (v) {
+                    if (!v) return '不能为空';
+                }
+            }
         }
     ]
 }
@@ -244,12 +271,10 @@ function updateItem(e, value, row, index) {
 }
 
 function removeItem(e, value, row, index) {
-    if (confirm("是否确认删除？")) {
-        itemTable.rawTable.bootstrapTable('remove', {
-            field: 'no',
-            values: [index + 1]
-        });
-    }
+    itemTable.rawTable.bootstrapTable('remove', {
+        field: 'no',
+        values: [index + 1]
+    });
 }
 
 let itemContent = [
@@ -279,9 +304,9 @@ let itemContent = [
             text: 'readonly'
         },
         type: 'select',
-        value: 'false',
+        value: "'false'",
         options: {
-            content: [{value: 'false', text: 'false'}, {value: 'true', text: 'true'}]
+            content: [{value: "'false'", text: 'false'}, {value: "'true'", text: 'true'}]
         }
     }, {
         itemId: 'enable',
@@ -289,9 +314,9 @@ let itemContent = [
             text: 'enable'
         },
         type: 'select',
-        value: 'true',
+        value: true,
         options: {
-            content: [{value: 'false', text: 'false'}, {value: 'true', text: 'true'}]
+            content: [{value: false, text: 'false'}, {value: true, text: 'true'}]
         }
     }, {
         itemId: 'required',
@@ -299,9 +324,9 @@ let itemContent = [
             text: 'required'
         },
         type: "select",
-        value: 'true',
+        value: true,
         options: {
-            content: [{value: 'false', text: 'false'}, {value: 'true', text: 'true'}]
+            content: [{value: false, text: 'false'}, {value: true, text: 'true'}]
         },
     }, {
         itemId: 'validType',

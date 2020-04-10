@@ -75,7 +75,7 @@ function replaceFirstStrWithLowerCase(str) {
 /**
  * 导入文件
  */
-function initUploadFile(ctrlName, uploadUrl, param) {
+function initUploadFile(ctrlName, uploadUrl, param,uploadAsync) {
     var oFile = {};
     oFile.Init = function () {
         var control = $("#" + ctrlName);
@@ -84,7 +84,7 @@ function initUploadFile(ctrlName, uploadUrl, param) {
             uploadUrl: uploadUrl,//上传的地址
             // uploadExtraData: param, //上传的时候，增加的附加参数
             // maxFilesNum: 10,//上传最大的文件数量
-            uploadAsync: true, //默认异步上传
+            uploadAsync: uploadAsync, //默认异步上传(true)
             showUpload: false, //是否显示上传按钮
             showRemove: false, //显示移除按钮
             showPreview: true, //是否显示预览
@@ -92,7 +92,7 @@ function initUploadFile(ctrlName, uploadUrl, param) {
             showCaption: true,//是否显示标题
             browseClass: "btn btn-primary", //按钮样式
             maxFileSize: 0,//单位为kb，如果为0表示不限制文件大小
-            maxFileCount: 1,
+            maxFileCount: 5,
             enctype: 'multipart/form-data',
             validateInitialCount: true,
             previewFileIcon: "<i class='glyphicon glyphicon-king'></i>"
@@ -103,4 +103,26 @@ function initUploadFile(ctrlName, uploadUrl, param) {
         });
     };
     return oFile;
+}
+
+
+function iterateObj(iterateContent, strContent, attrNum) {
+    strContent += "{";
+    var attrLength = 0;
+    Object.keys(iterateContent).forEach(function (key) {
+        var attr = iterateContent[key];
+        attrLength++;
+        if (attr instanceof Object) {
+            if (attr instanceof Array) {
+                strContent += key + ":" + iterateContent[key] + ",";
+            } else {
+                strContent += key + ":";
+                strContent += iterateObj(attr, '', 0)
+            }
+        } else {
+            strContent += key + ":" + iterateContent[key] + ",";
+        }
+    });
+    strContent += "},\n";
+    return strContent;
 }

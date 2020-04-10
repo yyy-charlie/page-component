@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>表格配置测试页面</title>
+    <link href="/css/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/bootstrap-treeview/bootstrap-treeview.css" rel="stylesheet">
+    <link href="/css/bootstrap-ztree/bootstrapStyle.css" rel="stylesheet">
+    <link href="/css/bootstrap-table/bootstrap-table.css" rel="stylesheet">
+
+    <script src="/js/common/systemCommonQuote.js"></script>
+    <script src="/js/common/commFunction.js"></script>
+    <script src="/js/common/pluginLibrary.js"></script>
+
+</head>
+<body>
+<div class="container-fluid">
+
+    <div class="row" id="head-top-model">
+        <div class="col-xs-12 new-head" id="headMenu">
+            <nav class="navbar navbar-default" role="navigation" id="navbar">
+                <div class="container-fluid">
+                    <div>
+                        <!--向左对齐-->
+                        <ul class="nav navbar-nav navbar-left">
+                            <li class="navbar-text navbar-left" id="cloud-name"></li>
+                        </ul>
+                        <!--向右对齐-->
+                        <ul class="nav navbar-nav navbar-right" id="sysMenu" style="margin-right: 10px;margin-top:8px">
+                        </ul>
+                    </div>
+
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row panelWrapper">
+
+        <div class="treePanelWrapper col-lg-12 col-md-12" id="typeManage">
+            <div class="panel panel-primary" id="typePanel">
+                <div class="panel-heading">测试表格</div>
+                <div class="scrollPanel panel-body">
+                    <div class="panel panel-primary" id="tablePanel">
+                        <!--                        <div class="panel-heading">树列表</div>-->
+                        <div class="scrollPanel panel-body" style="padding-left: 0;padding-bottom: 0">
+                            <div class="tableInfo">
+                                <table id="fieldTable" class="table"></table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+<!--模态框-->
+<div class="modal fade" id="modal_department" tabindex="-1" role="dialog">
+</div>
+
+
+</body>
+
+<script src="/js/componentCommon.js"></script>
+<script src="/js/tableConfigTest/tableConfig.js"></script>
+
+</html>

@@ -23,7 +23,7 @@
     <script src="/js/bootstrap-fileinput-master/zh.js"></script>
 
     <!--验证插件-->
-    <script src="/js/bootstrap-validator/bootstrapValidator.js"></script>
+<!--    <script src="/js/bootstrap-validator/bootstrapValidator.js"></script>-->
 
     <script src="/js/bootstrap-editable/bootstrap-table-editable.js"></script>
     <script src="/js/bootstrap-editable/bootstrap-editable.min.js"></script>
@@ -51,8 +51,9 @@
                             <li class="dropdown">
                                 <select name="systemChoose" onchange="window.location=this.value;" id="selectManage"
                                         class="form-control">
-                                    <option value="formManage">配置表单组件管理页面</option>
                                     <option value="tableManage">配置表格组件管理页面</option>
+                                    <option value="controllerManage">配置控制器管理页面</option>
+                                    <option value="formManage">配置表单组件管理页面</option>
                                     <option value="treeManage">配置树组件管理页面</option>
                                     <option value="boObjManage">BO对象管理页面</option>
                                     <option value="boTreeManage">BO树结构管理</option>
@@ -76,39 +77,33 @@
                         <div class="form-group form-inline">
                             <div class="form-group">
                                 <label class="label-control" for="getTableUrl">请求地址：</label>
-                                <input type="text" class='form-control' id="getTableUrl">
+                                <input type="text" value="http://rap2.taobao.org:38080/app/mock/241077/getTableData" class='form-control' id="getTableUrl">
                             </div>
 
                             <div class="form-group">
-                                <label class="label-control" for="addTableFiledUrl">新增地址：</label>
-                                <input type="text" class='form-control' id="addTableFiledUrl">
+                                <label class="label-control" for="addTableFieldUrl">新增地址：</label>
+                                <input type="text" class='form-control' id="addTableFieldUrl">
                             </div>
 
                             <div class="form-group">
-                                <label class="label-control" for="updateTableFiledUrl">修改地址：</label>
-                                <input type="text" class='form-control' id="updateTableFiledUrl">
+                                <label class="label-control" for="updateTableFieldUrl">修改地址：</label>
+                                <input type="text" class='form-control' id="updateTableFieldUrl">
                             </div>
 
                             <div class="form-group">
-                                <label class="label-control" for="deleteTableFiledUrl">删除地址：</label>
-                                <input type="text" class='form-control' id="deleteTableFiledUrl">
+                                <label class="label-control" for="deleteTableFieldUrl">删除地址：</label>
+                                <input type="text" class='form-control' id="deleteTableFieldUrl">
                             </div>
                         </div>
 
                         <div class="form-group form-inline">
                             <div class="form-group">
+                                <label class="label-control" for="tableVoName">对象名：</label>
+                                <input type="text" class='form-control' id="tableVoName">
+                            </div>
+                            <div class="form-group">
                                 <label class="label-control" for="tableID">tableID：</label>
-                                <input type="text" class='form-control' id="tableID">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="label-control" for="firstQueryParam">第一次请求参数：</label>
-                                <input type="text" class='form-control' id="firstQueryParam">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="label-control" for="tableRefreshQueryParam">表格刷新请求参数：</label>
-                                <input type="text" class='form-control' id="tableRefreshQueryParam">
+                                <input type="text" value="fieldTable" class='form-control' id="tableID">
                             </div>
                         </div>
 
@@ -116,8 +111,8 @@
                             <div class="form-group">
                                 <label class="label-control" for="orderNumber">需要序列号：</label>
                                 <select id="orderNumber" class="form-control">
-                                    <option value="true">是</option>
-                                    <option value="false">否</option>
+                                    <option value="1">是</option>
+                                    <option value="">否</option>
                                 </select>
                             </div>
                         </div>
@@ -133,7 +128,8 @@
 
                             <div class="form-group" style="display: none;">
                                 <label class="label-control" for="detailsParam">查看列参数：</label>
-                                <input type="text" class='form-control' id="detailsParam" placeholder="如：delDetails/查看详情">
+                                <input type="text" class='form-control' id="detailsParam"
+                                       value="delDetails/查看详情" placeholder="如：delDetails/查看详情">
                             </div>
                         </div>
 
@@ -141,14 +137,15 @@
                             <div class="form-group">
                                 <label class="label-control" for="isNeedOperate">需要操作列：</label>
                                 <select id="isNeedOperate" class="form-control">
-                                    <option value="0">否</option>
+                                    <option value="">否</option>
                                     <option value="1">是</option>
                                 </select>
                             </div>
 
                             <div class="form-group" style="display: none;">
                                 <label class="label-control" for="operateParam">操作列参数：</label>
-                                <input type="text" class='form-control' id="operateParam" placeholder="如：update/修改，orderRemove/删除">
+                                <input type="text" class='form-control' id="operateParam"
+                                       value="update/修改,orderRemove/删除" placeholder="如：update/修改,orderRemove/删除">
                             </div>
                         </div>
 
@@ -156,8 +153,8 @@
                             <div class="form-group">
                                 <label class="label-control" for="columns">表头数据：</label>
                                 <select id="columns" class="form-control">
-                                    <option value="false">固定</option>
-                                    <option value="true">发送请求</option>
+                                    <option value="1">固定</option>
+                                    <option value="">发送请求</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -172,20 +169,20 @@
 
                         <div class="form-group form-inline">
                             <div>
-                                <button type="button" class="btn btn-primary"
-                                        onclick="importObj()">
+                                <button id="importBtn" type="button" class="btn btn-primary"
+                                        onclick="importTableObj()">
                                     导入对象
                                 </button>
 
-                                <button type="button" class="btn btn-primary"
-                                        onclick="addItemBtn()">
-                                    新增
+                                <button id="addFieldBtn" type="button" class="btn btn-primary"
+                                        onclick="addFieldBtn()">
+                                    +新增Field
                                 </button>
                             </div>
 
                             <div>
-                                <div class="tableInfo table-responsive">
-                                    <table id="filedTable" class="text-nowrap table"></table>
+                                <div class="tableInfo">
+                                    <table id="fieldTable" class="table"></table>
                                 </div>
                             </div>
                         </div>
@@ -201,7 +198,6 @@
             </div>
         </div>
     </div>
-</div>
 </div>
 
 <!--模态框-->
@@ -233,5 +229,6 @@
 
 <script src="/js/componentCommon.js"></script>
 <script src="/js/tableManage/tableManage.js"></script>
+<script src="/js/tableManage/exportTableConfig.js"></script>
 
 </html>

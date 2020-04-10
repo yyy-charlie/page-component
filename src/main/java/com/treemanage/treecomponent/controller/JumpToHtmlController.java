@@ -68,13 +68,33 @@ public class JumpToHtmlController {
     }
 
     /**
+     * 跳转到配置控制器页面
+     *
+     * @return
+     */
+    @RequestMapping("/controllerManage")
+    public String getControllerManage() {
+        return "/controllerManage";
+    }
+
+    /**
      * 跳转到树配置测试页面
      *
      * @return
      */
     @RequestMapping("/treeConfigTest")
     public String getTreeConfigTest() {
-        return "/treeConfigTest";
+        return "testHtml/treeConfigTest";
+    }
+
+    /**
+     * 跳转到表格配置测试页面
+     *
+     * @return
+     */
+    @RequestMapping("/tableConfigTest")
+    public String getTableConfigTest() {
+        return "testHtml/tableConfigTest";
     }
 
 

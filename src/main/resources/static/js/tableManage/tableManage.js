@@ -1,22 +1,23 @@
-var filedTable = new commTable();
+var fieldTable = new commTable();
 
 (function initSystem() {
 
     //初始化导入
-    let uploadFile = initUploadFile("uploadFile", "tableManage/importObj", null);
+    let uploadFile = initUploadFile("uploadFile", "tableManage/importObj", null, true);
     uploadFile.Init();
 
     //导入完成
     fileUploaded("uploadFile");
 
     //初始化item表格
-    initFiledTable();
+    initFieldTable();
 
+    //页面交互
     pageInteraction();
 
 })();
 
-function importObj() {
+function importTableObj() {
     $("#table-importObjModal").modal('show');
 }
 
@@ -33,77 +34,126 @@ function fileUploaded(ctrlName) {
 
         var result = data.response;
         if (result.code == 200) {
-            let data = result.data;
-            $("#objName").val(data.beanName);
-            let attrs = data.attributes;
+            let attrs = result.data.attributes;
             $.each(attrs, function (index, item) {
                 rowData.push({
-                    itemId: item.name,
-                    display: "block",
-                    readonly: false,
-                    enable: true,
-                    required: true,
-                    validType: null
+                    field: item.name,
+                    title: ''
                 });
             })
         }
 
-        $("#filedTable").bootstrapTable('refreshOptions', {
-            data: rowData,
-        });
+        $("#fieldTable").bootstrapTable('append', rowData);
     });
 }
 
-function initFiledTable() {
+function initFieldTable() {
     var panelHeight = $("#tableConfigPanel").height();
 
-    filedTable.init(
+    fieldTable.init(
         {                                                                      //表头是固定的，数据要url请求
-            tableID: "filedTable",
+            tableID: "fieldTable",
             loadMethod: 'button',                                                           //默认是scroll 需要其他的写button
             orderNumber: false,
             checkbox: false,
             isNeedOperate: true,                                           //操作列
-            otherOperationArr: ['updateItem', 'removeItem'],
-            operate: `<button type="button" class="updateItem btn-primary btn-xs">&nbsp;修改&nbsp;</button>&nbsp;&nbsp; 
-                       <button type="button" class="removeItem btn-primary btn-xs">&nbsp;删除&nbsp;</button>&nbsp;&nbsp; `,
-            updateItem: function (e, value, row, index) {                    //注册的点击事件多一个event参数
-                updateItem(e, value, row, index);
-            },
-            removeItem: function (e, value, row, index) {
-                removeItem(e, value, row, index);
+            otherOperationArr: ['removeField'],
+            operate: `<button type="button" class="removeField btn-primary btn-xs">&nbsp;删除&nbsp;</button>&nbsp;&nbsp; `,
+            removeField: function (e, value, row, index) {
+                removeField(e, value, row, index);
             },
         }, {
             showRefresh: false,
             showExport: false,
             showColumns: true,
             search: false,
-            height: panelHeight * 0.65,
+            height: panelHeight * 0.5,
             columns: [
                 {
                     field: 'field',
                     title: 'field',
-                    align: "center"
+                    align: "center",
+                    width: '450px',
+                    editable: {
+                        type: 'text',
+                        validate: function (v) {
+                            if (!v) return 'field不能为空';
+                        }
+                    }
                 }, {
                     field: 'title',
                     title: 'title',
-                    align: "center"
+                    align: "center",
+                    width: '450px',
+                    editable: {
+                        type: 'text',
+                        validate: function (v) {
+                            if (!v) return 'title不能为空';
+                        }
+                    }
                 }],
             pageNumber: 1,
             pageSize: [10000],
             responseHandler: function (data) {
                 return data.data;
             },
-            onClickRow: function (row, $el, field) {
-                $('#filedTable .success').removeClass('success');
-                $el.addClass('success');
+            onEditableSave: function (field, row, oldValue, $el) {
+                //解决表头与内容宽度不对齐的问题
+                $("#fieldTable").bootstrapTable('resetView');
             }
         }
     );
 }
 
-function exportConfig() {
+function removeField(e, value, row, index) {
+    fieldTable.rawTable.bootstrapTable('remove', {
+        field: 'no',
+        values: [index + 1]
+    });
+}
 
+function addFieldBtn(e, value, row, index) {
+    //modal
+    let modalConf = {
+        id: 'addFieldModal',
+        frameObj: $('#modal_department'),
+        title: '新增field',
+        callbacks: {
+            onCommit: commitAddItem                                                              //这里是填写方法名
+        }
+    };
+    let nModal = new comModal();
+    nModal.init(modalConf);
+
+    //form
+    let formOpt = {
+        formId: 'nForm',
+        initContent: [{
+            itemId: 'field',
+            label: {
+                text: 'field'
+            }
+        }, {
+            itemId: 'title',
+            label: {
+                text: 'title'
+            }
+        }]
+    };
+    let nForm = new comForm();
+    nForm.init(formOpt);
+
+    //form加入到modal
+    nModal.appendEle(nForm);
+
+    function commitAddItem(e, modal) {
+        let val = modal.getValues();
+        fieldTable.rawTable.bootstrapTable('insertRow', {
+            index: 0,
+            row: val
+        });
+        modal.hide();
+    }
 }
 
 function pageInteraction() {
@@ -126,4 +176,17 @@ function pageInteraction() {
             self.parent().next().css('display', 'none');
         }
     });
+
+    //配置表头是否固定
+    $("#columns").change(function () {
+        if (this.value) {
+            $("#importBtn").attr("disabled", false);
+            $("#addFieldBtn").attr("disabled", false);
+        } else {
+            $("#importBtn").attr("disabled", true);
+            $("#addFieldBtn").attr("disabled", true);
+        }
+    });
+
+
 }

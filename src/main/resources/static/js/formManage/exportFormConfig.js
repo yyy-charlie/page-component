@@ -102,13 +102,13 @@ function filterDefault(itemContent) {
     if (itemContent.display == "block") {
         delete itemContent.display;
     }
-    if (itemContent.readonly == "false" || itemContent.readonly == false) {
+    if (itemContent.readonly == "'false'") {
         delete itemContent.readonly;
     }
-    if (itemContent.enable == "true" || itemContent.enable == true) {
+    if (itemContent.enable == "'true'") {
         delete itemContent.enable;
     }
-    if (itemContent.required == "true" || itemContent.required == true) {
+    if (itemContent.required == "'true'") {
         delete itemContent.required;
     }
     if (itemContent.validType == null || itemContent.validType == "") {
@@ -132,7 +132,6 @@ function getJavaConfigContent() {
     import com.hdstcloud.security.common.msg.BaseResponse;
     
     @RestController
-    @ResponseBody
     @RequestMapping("` + objNameHump + `")
     public class ` + objNameHump + `Controller {
         
