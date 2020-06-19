@@ -48,6 +48,7 @@ function getDetailsButton() {
 }
 
 function delDetails(e, value, row, index) {
+
 }
 
 function getOperateButton() {

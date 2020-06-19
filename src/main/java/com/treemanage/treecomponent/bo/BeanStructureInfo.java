@@ -18,17 +18,21 @@ import java.util.List;
 @Data
 public class BeanStructureInfo {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "JDBC")
-	private Long id;							//主键
-	@TreeNodeName
-	private String beanName;					//对象名称
-	private String beanClassName;				//对象Class地址
-	private List<AttrStructureInfo> attributes;	//属性数组
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "JDBC")
+    private Long id;                            //主键
+    @TreeNodeName
+    private String beanName;                    //对象名称
+    private String beanClassName;                //对象Class地址
+    private List<AttrStructureInfo> attributes;    //属性数组
 
-	public String getBeanPackage(){
-		if(ObjectUtils.isNull(this.beanClassName))return null;
-		return this.beanClassName.replace("."+this.beanName,"");
-	}
+    public BeanStructureInfo() {
+
+    }
+
+    public String getBeanPackage() {
+        if (ObjectUtils.isNull(this.beanClassName)) return null;
+        return this.beanClassName.replace("." + this.beanName, "");
+    }
 
 }

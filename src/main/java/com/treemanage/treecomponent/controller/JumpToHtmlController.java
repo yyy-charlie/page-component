@@ -14,7 +14,7 @@ public class JumpToHtmlController {
 
     @RequestMapping("/")
     public String getIndex() {
-        return "/boObjManage";
+        return "boObjManage";
     }
 
     /**
@@ -24,7 +24,7 @@ public class JumpToHtmlController {
      */
     @RequestMapping("/boObjManage")
     public String getBoObjManage() {
-        return "/boObjManage";
+        return "boObjManage";
     }
 
     /**
@@ -34,7 +34,7 @@ public class JumpToHtmlController {
      */
     @RequestMapping("/boTreeManage")
     public String getBoTreeManage() {
-        return "/boTreeManage";
+        return "boTreeManage";
     }
 
     /**
@@ -44,7 +44,7 @@ public class JumpToHtmlController {
      */
     @RequestMapping("/treeManage")
     public String getTreeManage() {
-        return "/treeManage";
+        return "treeManage";
     }
 
     /**
@@ -54,7 +54,7 @@ public class JumpToHtmlController {
      */
     @RequestMapping("/formManage")
     public String getFormManage() {
-        return "/formManage";
+        return "formManage";
     }
 
     /**
@@ -64,7 +64,7 @@ public class JumpToHtmlController {
      */
     @RequestMapping("/tableManage")
     public String getTableManage() {
-        return "/tableManage";
+        return "tableManage";
     }
 
     /**
@@ -74,7 +74,7 @@ public class JumpToHtmlController {
      */
     @RequestMapping("/controllerManage")
     public String getControllerManage() {
-        return "/controllerManage";
+        return "controllerManage";
     }
 
     /**

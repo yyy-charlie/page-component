@@ -27,7 +27,11 @@ function getInitContent() {
     let rowsDataArr = methodTable.rawTable.bootstrapTable('getOptions').data;
 
     exportJavaConfigContent += `
-    import com.hdstcloud.security.common.msg.BaseResponse;`;
+    import com.hdstcloud.security.common.msg.BaseResponse;
+    import com.hdstcloud.security.common.util.ParseUtils;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.web.bind.annotation.*;
+    import org.springframework.http.HttpStatus;`;
 
     exportJavaConfigContent += `
     @RestController
@@ -131,8 +135,7 @@ function getInitContent() {
             }
         }
 
-        exportJavaConfigContent += `
-        } catch (Exception e) {
+        exportJavaConfigContent += `} catch (Exception e) {
             return ParseUtils.parse2Response(HttpStatus.INTERNAL_SERVER_ERROR, description + "失败");
         }`;
 

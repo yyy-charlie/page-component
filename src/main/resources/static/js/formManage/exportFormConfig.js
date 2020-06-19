@@ -12,7 +12,7 @@ function exportConfig() {
     //导出页面表单配置
     exportFormConfig();
     //导出Java文件配置
-    exportJavaConfig();
+    // exportJavaConfig();
 }
 
 /**

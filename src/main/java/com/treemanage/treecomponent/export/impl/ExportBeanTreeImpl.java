@@ -51,9 +51,8 @@ public class ExportBeanTreeImpl implements ExportBeanTree {
                 .append("\n")
                 .append("\t\tTreeConfig treeConfig = new TreeConfig();\n")
                 .append("\t\ttreeConfig.setTreeClassName(\""+beanTreeStuctureInfo.getBeanTreeClassName()+"\");\n")
-                .append("\t\ttreeConfig.setIfNameRepeat("+getIfNameRepeat(beanTreeStuctureInfo)+")\n")
-                .append("\n")
-        ;
+                .append("\t\ttreeConfig.setIfNameRepeat("+getIfNameRepeat(beanTreeStuctureInfo)+");\n")
+                .append("\n");
 
         setClassPersistence(stringBuffer,beanTreeStuctureInfo);
 

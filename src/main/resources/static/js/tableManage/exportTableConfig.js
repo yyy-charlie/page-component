@@ -20,8 +20,8 @@ function exportConfig() {
     downloadFile("tableConfig.js", initContent + functionContent); //fileContent is string
 
     //获取controller文件内容并导出
-    getJavaConfigContent();
-    downloadFile(objName + "Controller.java", exportJavaConfigContent); //fileContent is string
+    // getJavaConfigContent();
+    // downloadFile(objName + "Controller.java", exportJavaConfigContent); //fileContent is string
 
     clearContent();
 }

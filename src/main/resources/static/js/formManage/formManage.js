@@ -71,10 +71,10 @@ function fileUploaded(ctrlName) {
                 rowData.push({
                     itemId: item.name,
                     label: null,
-                    display: "block",
-                    readonly: false,
-                    enable: true,
-                    required: true,
+                    display: "'block'",
+                    readonly: "'false'",
+                    enable: "'true'",
+                    required: "'true'",
                     validType: null
                 });
             })
@@ -186,7 +186,7 @@ function getItemColumns() {
             width: '123px',
             editable: {
                 type: 'select',
-                source: [{value: "block", text: "block"}, {value: "inline", text: "inline"}]
+                source: [{value: "'block'", text: "block"}, {value: "'inline'", text: "inline"}]
             }
         }, {
             field: 'readonly',
@@ -294,9 +294,9 @@ let itemContent = [
             text: 'display'
         },
         type: 'select',
-        value: 'block',
+        value: "'block'",
         options: {
-            content: [{value: 'block', text: 'block'}, {value: 'inline', text: 'inline'}]
+            content: [{value: "'block'", text: 'block'}, {value: "'inline'", text: 'inline'}]
         }
     }, {
         itemId: 'readonly',
@@ -316,7 +316,7 @@ let itemContent = [
         type: 'select',
         value: true,
         options: {
-            content: [{value: false, text: 'false'}, {value: true, text: 'true'}]
+            content: [{value: "'false'", text: 'false'}, {value: "'true'", text: 'true'}]
         }
     }, {
         itemId: 'required',
@@ -326,7 +326,7 @@ let itemContent = [
         type: "select",
         value: true,
         options: {
-            content: [{value: false, text: 'false'}, {value: true, text: 'true'}]
+            content: [{value: "'false'", text: 'false'}, {value: "'true'", text: 'true'}]
         },
     }, {
         itemId: 'validType',

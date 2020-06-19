@@ -383,7 +383,7 @@ function requestZtreeAjax() {
                     ele["open"] = true; 
                     var children = ele.children; 
                     if (children != null && children.length > 0) { 
-                        ztreeFormat(children) 
+                        ztreeFormat(children);
                     } 
                 }); 
                 return data; 
@@ -477,6 +477,6 @@ function exportJavaConfig() {
     `;
 
     //下载文件
-    downloadFile(objName + "Controller.java", exportJavaConfigContent); //fileContent is string
+    // downloadFile(objName + "Controller.java", exportJavaConfigContent); //fileContent is string
     exportJavaConfigContent = "";
 }

@@ -11,6 +11,8 @@
     <groupId>com.pageManage</groupId>
     <artifactId>page-component</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
     <name>page-component</name>
     <description>Demo project for Spring Boot</description>
 
@@ -119,6 +121,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
             </plugin>
         </plugins>
     </build>
